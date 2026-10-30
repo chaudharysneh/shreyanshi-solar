@@ -27,13 +27,13 @@
     <link rel="preload" as="image" href="{{ $mainLogoUrl }}">
 
     <!-- Google Fonts (Outfit)     -->
-    <link rel="icon" type="image/png" href="{{ url((config('frontend_assets.public_prefix') ? rtrim(config('frontend_assets.public_prefix'), '/') . '/' : '') . 'images/template/faveicone.png') }}">
+    <link rel="icon" type="image/png" href="{{ crm_asset('images/template/faveicone.png') }}">
     <!-- Mobile Home Screen Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="{{ $companyName }}">
     <meta name="application-name" content="{{ $companyName }}">
-    <link rel="apple-touch-icon" href="{{ url((config('frontend_assets.public_prefix') ? rtrim(config('frontend_assets.public_prefix'), '/') . '/' : '') . 'images/template/faveicone.png') }}">
+    <link rel="apple-touch-icon" href="{{ crm_asset('images/template/faveicone.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
