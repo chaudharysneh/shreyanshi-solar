@@ -1,0 +1,9 @@
+.crm-index-filter-select + .select2-container { width:100% !important; min-width:0; }
+.crm-index-filter-select + .select2-container .select2-selection--single { min-height:46px; display:flex; align-items:center; border-color:#dce2ea; border-radius:6px; }
+.crm-index-filter-select + .select2-container .select2-selection__rendered { padding-right:24px; }
+.select2-container--bootstrap-5.crm-index-filter-portal { width:auto !important; max-width:calc(100vw - 16px); }
+.crm-index-filter-dropdown { max-width:calc(100vw - 16px); }
+.crm-index-filter-dropdown .select2-results__options { overflow-x:hidden; }
+.crm-index-filter-dropdown .select2-results__option { overflow-wrap:anywhere; }
+.crm-index-filter-dropdown .select2-results__option--selected { background:#0a2540 !important; color:#fff !important; }
+.crm-index-filter-dropdown .select2-results__option--highlighted:not(.select2-results__option--selected) { background:#e4edf5 !important; color:#0a2540 !important; }

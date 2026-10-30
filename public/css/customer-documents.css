@@ -1,0 +1,68 @@
+#estimateDocsModal .modal-content {
+    background: var(--crm-bg-card, #fff);
+    color: var(--crm-text-body, #334155);
+}
+
+.customer-docs-intro {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    border-radius: 12px;
+    background: var(--crm-bg-soft, #f8fafc);
+    border: 1px solid var(--crm-border, #e2e8f0);
+}
+
+.customer-docs-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 44px;
+    height: 44px;
+    border-radius: 12px;
+    color: var(--crm-accent, #3b5bdb);
+    background: rgba(59, 91, 219, .1);
+    font-size: 1.4rem;
+}
+
+.customer-doc-field {
+    padding: 16px;
+    border: 1px solid var(--crm-border, #e2e8f0);
+    border-radius: 12px;
+    background: var(--crm-bg-soft, #f8fafc);
+    transition: border-color .2s ease;
+}
+
+.customer-doc-field:focus-within {
+    border-color: var(--crm-accent, #3b5bdb);
+}
+
+.customer-doc-field .form-label {
+    font-size: .875rem;
+}
+
+.customer-doc-field .form-control {
+    font-size: .82rem;
+    border-radius: 8px;
+}
+
+.customer-doc-status {
+    flex-shrink: 0;
+    background: rgba(217, 119, 6, .1);
+    color: #b45309;
+    font-size: .65rem;
+    padding: 6px 8px;
+}
+
+.customer-doc-field.is-complete .customer-doc-status {
+    color: #059669;
+    background: rgba(5, 150, 105, .1);
+}
+
+.customer-doc-selection {
+    overflow-wrap: anywhere;
+}
+
+#estimateDocsList > div > .d-flex {
+    flex-shrink: 0;
+}

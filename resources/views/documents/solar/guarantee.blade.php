@@ -1,0 +1,5 @@
+<h2>Guarantee Certificate Undertaking to be submitted by VENDOR</h2>
+<p>The undersigned will provide the services to the consumers for repairs/maintenance of the RTS plant free of cost for 5 years of the comprehensive Maintenance Contract (CMC) period from the date of commissioning of the plant. Non-performing/under-performing system components will be replaced/repaired free of cost in the CMC period.</p>
+<p class="spaced">Signature (Vendor)</p><p>Stamp &amp; Seal</p>
+<p class="spaced">Identity Details of Consumer: <b>{{ $value('consumer_name') }}</b><br>Aadhar Number: <b>{{ $value('aadhaar_number') }}</b></p>
+@if($aadhaarImage)<p class="aadhaar"><img src="{{ $aadhaarImage }}" style="width:{{ $aadhaarWidth }}pt;height:{{ $aadhaarHeight }}pt" alt="Consumer Aadhaar image"></p>@else<p class="spaced">Consumer Aadhaar image: Not attached to this document.</p>@endif

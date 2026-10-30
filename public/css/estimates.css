@@ -1,0 +1,863 @@
+/* Estimates Styling */
+
+.equipment-ratio-option { display:flex; align-items:center; gap:12px; padding:5px 4px; }
+.equipment-ratio-option strong { display:block; font-size:.9rem; font-weight:600; }
+.equipment-ratio-option small { display:block; font-size:.75rem; opacity:.75; margin-top:3px; }
+.equipment-ratio-icon { display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:9px; background:rgba(10,37,64,.08); font-size:1.15rem; }
+.select2-container--bootstrap-5 .equipment-ratio-dropdown { border-color:#0a2540; border-radius:12px; overflow:hidden; box-shadow:0 12px 30px rgba(10,37,64,.16); padding:5px; }
+.select2-container--bootstrap-5 .equipment-ratio-dropdown .select2-results__option { border-radius:8px; margin:3px 0; }
+/* Style the actual chosen value separately from Select2's keyboard highlight. */
+body .select2-container--bootstrap-5 .equipment-ratio-dropdown.select2-dropdown .select2-results__option {
+    background:var(--crm-bg-card,#fff) !important;
+    color:var(--crm-text-body,#334155) !important;
+}
+body .select2-container--bootstrap-5 .equipment-ratio-dropdown.select2-dropdown .select2-results__option:not(:has(.equipment-ratio-current)):is(:hover,:active,.select2-results__option--highlighted) {
+    background:#e3ebf3 !important;
+    color:#0a2540 !important;
+}
+body .select2-container--bootstrap-5 .equipment-ratio-dropdown.select2-dropdown .select2-results__option:has(.equipment-ratio-current) {
+    background:#0a2540 !important;
+    color:#fff !important;
+}
+.equipment-ratio-dropdown .equipment-ratio-icon { background:rgba(10,37,64,.1); }
+.equipment-ratio-dropdown .equipment-ratio-current .equipment-ratio-icon { background:rgba(255,255,255,.15); }
+.select2-container--bootstrap-5 .equipment-ratio-selection { border-radius:10px !important; border-color:var(--crm-border,#dbe2ea); }
+.select2-container--bootstrap-5.select2-container--focus .equipment-ratio-selection,
+.select2-container--bootstrap-5.select2-container--open .equipment-ratio-selection { border-color:#0a2540 !important; box-shadow:0 0 0 3px rgba(10,37,64,.12) !important; }
+
+.estimate-field-suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.estimate-suggestion {
+    padding: 4px 10px;
+    border: 1px solid var(--crm-border, #e2e8f0);
+    border-radius: 999px;
+    background: var(--crm-bg-soft, #f8fafc);
+    color: var(--crm-text-body, #334155);
+    font-size: .75rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.estimate-suggestion:hover,
+.estimate-suggestion:focus-visible {
+    border-color: var(--crm-accent, #3b5bdb);
+    background: rgba(59, 91, 219, .1);
+    color: var(--crm-accent, #3b5bdb);
+}
+
+/* Reflow the remaining BOM fields when row pricing controls are hidden. */
+@media (min-width: 768px) {
+    #bomContainer .bom-row-grid.estimate-base-price-grid {
+        grid-template-columns: minmax(0, 2fr) repeat(2, minmax(0, 1fr)) !important;
+        grid-template-rows: auto auto;
+    }
+
+    #bomContainer .bom-row-grid.estimate-base-price-grid > div:nth-child(1) {
+        grid-column: 1;
+        grid-row: 1 / 3;
+    }
+
+    #bomContainer .bom-row-grid.estimate-base-price-grid > div:nth-child(2) {
+        grid-column: 2 / 4;
+        grid-row: 1;
+    }
+
+    #bomContainer .bom-row-grid.estimate-base-price-grid > div:nth-child(3) {
+        grid-column: 2;
+        grid-row: 2;
+    }
+
+    #bomContainer .bom-row-grid.estimate-base-price-grid > div:nth-child(4) {
+        grid-column: 3;
+        grid-row: 2;
+    }
+
+    #bomContainer .bom-without-make .bom-row-grid.estimate-base-price-grid > div:nth-child(3) {
+        grid-column: 2 / 4;
+        grid-row: 1;
+    }
+
+    #bomContainer .bom-without-make .bom-row-grid.estimate-base-price-grid > div:nth-child(4) {
+        grid-column: 2 / 4;
+        grid-row: 2;
+    }
+
+    #bomContainer .bom-row-grid.estimate-base-price-grid > .bom-action-cell {
+        grid-column: auto;
+        grid-row: auto;
+    }
+}
+
+.modal-open .select2-container--open,
+.modal-open .select2-dropdown {
+    z-index: 1070 !important;
+}
+
+@media (max-width: 767.98px) {
+    .modal-open .select2-dropdown .select2-results__options {
+        max-height: min(220px, 42vh) !important;
+    }
+
+    .select2-dropdown.quick-estimate-mobile-dropdown {
+        box-sizing: border-box;
+    }
+
+    #quickEstimateModal .modal-dialog {
+        margin: 0.5rem auto;
+        max-width: calc(100vw - 1rem);
+        width: calc(100vw - 1rem);
+    }
+
+    #quickEstimateModal .modal-content,
+    #quickEstimateModal .modal-body {
+        overflow-x: clip;
+        max-width: 100%;
+    }
+
+    #quickEstimateModal .modal-body {
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+
+    #quickEstimateModal .row {
+        --bs-gutter-x: 0.5rem;
+    }
+
+    #quickEstimateModal .row > [class*="col-"],
+    #quickEstimateModal .active-step .row > [class*="col-"] {
+        min-width: 0;
+    }
+
+    #quickEstimateModal label.form-label .crm-label-icon,
+    #quickEstimateModal label.form-label > i.fa-solid,
+    #quickEstimateModal label.form-label > i.bi:not(.bi-info-circle) {
+        display: none !important;
+    }
+
+    #quickEstimateModal label.form-label.crm-label-with-icon {
+        gap: 0;
+    }
+
+    #quickEstimateModal .quick-type-select-wrap,
+    #quickEstimateModal .quick-customer-select-wrap,
+    #quickEstimateModal .quick-template-select-wrap,
+    #quickEstimateModal .quick-type-select-wrap .select2-container,
+    #quickEstimateModal .quick-customer-select-wrap .select2-container,
+    #quickEstimateModal .quick-template-select-wrap .select2-container {
+        max-width: 100% !important;
+    }
+
+    #quickEstimateModal .select2-selection--single {
+        overflow: hidden;
+    }
+
+    #quickEstimateModal .select2-selection__rendered {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 100%;
+    }
+}
+
+#quickEstimateModal .quick-customer-select-wrap .select2-container,
+#quickEstimateModal .quick-type-select-wrap .select2-container,
+#quickEstimateModal .quick-template-select-wrap .select2-container,
+#quickEstimateModal .quick-step-1 .select2-container {
+    width: 100% !important;
+    max-width: 100%;
+}
+
+#quickEstimateModal .quick-type-select-wrap,
+#quickEstimateModal .quick-customer-select-wrap,
+#quickEstimateModal .quick-template-select-wrap {
+    min-width: 0;
+}
+
+#quickEstimateModal .quick-step-field-col {
+    min-width: 0;
+}
+
+#quickEstimateModal .crm-label-with-icon {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+#quickEstimateModal .crm-label-icon {
+    color: #64748b;
+    font-size: 0.95rem;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+#estimateCreateForm .estimate-form-field-col,
+#estimateEditForm .estimate-form-field-col,
+#invoiceCreateForm .estimate-form-field-col,
+#invoiceEditForm .estimate-form-field-col {
+    min-width: 0;
+}
+
+#estimateCreateForm label.form-label,
+#estimateEditForm label.form-label,
+#invoiceCreateForm label.form-label,
+#invoiceEditForm label.form-label {
+    flex-wrap: nowrap;
+}
+
+#estimateCreateForm .crm-label-with-icon,
+#estimateEditForm .crm-label-with-icon,
+#invoiceCreateForm .crm-label-with-icon,
+#invoiceEditForm .crm-label-with-icon {
+    flex-wrap: nowrap;
+}
+
+#estimateCreateForm .crm-label-icon,
+#estimateEditForm .crm-label-icon,
+#estimateCreateForm label.form-label .text-danger,
+#estimateEditForm label.form-label .text-danger,
+#invoiceCreateForm .crm-label-icon,
+#invoiceEditForm .crm-label-icon,
+#invoiceCreateForm label.form-label .text-danger,
+#invoiceEditForm label.form-label .text-danger {
+    flex-shrink: 0;
+}
+
+#estimateCreateForm .select2-container .select2-selection.is-invalid,
+#estimateEditForm .select2-container .select2-selection.is-invalid,
+#invoiceCreateForm .select2-container .select2-selection.is-invalid,
+#invoiceEditForm .select2-container .select2-selection.is-invalid {
+    border-color: var(--bs-form-invalid-border-color, #dc3545) !important;
+}
+
+#estimateCreateForm .bom-make-error,
+#estimateEditForm .bom-make-error,
+#invoiceCreateForm .bom-make-error,
+#invoiceEditForm .bom-make-error {
+    display: none;
+}
+
+#estimateCreateForm .bom-make-error.d-block,
+#estimateEditForm .bom-make-error.d-block,
+#invoiceCreateForm .bom-make-error.d-block,
+#invoiceEditForm .bom-make-error.d-block {
+    display: block;
+}
+
+@media (max-width: 767.98px) {
+    #estimateCreateForm .estimate-charges-date-group > .row.g-3,
+    #estimateEditForm .estimate-charges-date-group > .row.g-3,
+    #invoiceCreateForm .estimate-charges-date-group > .row.g-3,
+    #invoiceEditForm .estimate-charges-date-group > .row.g-3 {
+        min-height: 0 !important;
+        --bs-gutter-y: 0.75rem;
+    }
+
+    #estimateCreateForm .estimate-charges-date-group,
+    #estimateEditForm .estimate-charges-date-group,
+    #invoiceCreateForm .estimate-charges-date-group,
+    #invoiceEditForm .estimate-charges-date-group {
+        margin-bottom: 0.75rem;
+    }
+
+    #estimateCreateForm .estimate-charges-date-group .estimate-structure-charges-col,
+    #estimateEditForm .estimate-charges-date-group .estimate-structure-charges-col,
+    #invoiceCreateForm .estimate-charges-date-group .estimate-structure-charges-col,
+    #invoiceEditForm .estimate-charges-date-group .estimate-structure-charges-col {
+        margin-top: 0.5rem;
+        padding-top: 0.25rem;
+    }
+
+    #estimateCreateForm .estimate-charges-date-group .estimate-structure-charges-col .form-label,
+    #estimateEditForm .estimate-charges-date-group .estimate-structure-charges-col .form-label,
+    #invoiceCreateForm .estimate-charges-date-group .estimate-structure-charges-col .form-label,
+    #invoiceEditForm .estimate-charges-date-group .estimate-structure-charges-col .form-label {
+        margin-bottom: 0.5rem;
+    }
+}
+
+@media (min-width: 768px) {
+    #estimateCreateForm .estimate-charges-date-group > .row,
+    #estimateEditForm .estimate-charges-date-group > .row,
+    #invoiceCreateForm .estimate-charges-date-group > .row,
+    #invoiceEditForm .estimate-charges-date-group > .row {
+        align-items: flex-end;
+    }
+
+    #estimateCreateForm .estimate-charges-col,
+    #estimateEditForm .estimate-charges-col,
+    #estimateCreateForm .estimate-created-date-col,
+    #estimateEditForm .estimate-created-date-col,
+    #invoiceCreateForm .estimate-charges-col,
+    #invoiceEditForm .estimate-charges-col,
+    #invoiceCreateForm .estimate-created-date-col,
+    #invoiceEditForm .estimate-created-date-col {
+        min-width: 0;
+    }
+
+    #estimateCreateForm .estimate-structure-charges-col,
+    #estimateEditForm .estimate-structure-charges-col,
+    #invoiceCreateForm .estimate-structure-charges-col,
+    #invoiceEditForm .estimate-structure-charges-col {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
+#addCustomerModal .modal-dialog,
+#quickAddBomModal .modal-dialog,
+.quick-estimate-nested-modal {
+    max-width: 420px;
+}
+
+#addCustomerModal .modal-content,
+#quickAddBomModal .modal-content {
+    overflow: hidden;
+}
+
+#quickAddBomModal .select2-container,
+#quickAddBomModal .select2-container .select2-selection {
+    max-width: 100% !important;
+}
+
+@media (max-width: 767.98px) {
+    #estimateCreateForm label.form-label,
+    #estimateEditForm label.form-label {
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+        min-height: auto;
+        margin-bottom: 0.35rem;
+        gap: 0.35rem;
+        line-height: 1.2;
+        font-size: 0.8125rem;
+    }
+
+    #estimateCreateForm .estimate-template-label-group,
+    #estimateEditForm .estimate-template-label-group {
+        min-width: 0;
+        flex: 0 1 auto;
+    }
+
+    #create_template_wrapper label.form-label,
+    #edit_template_wrapper label.form-label {
+        justify-content: flex-start !important;
+    }
+
+    #estimateCreateForm .row.g-3 > [class*="col-"],
+    #estimateEditForm .row.g-3 > [class*="col-"] {
+        min-width: 0;
+    }
+}
+
+@media (max-width: 767.98px) {
+    #addCustomerModal.modal,
+    #quickAddBomModal.modal {
+        padding-left: 1.25rem !important;
+        padding-right: 1.25rem !important;
+    }
+
+    #addCustomerModal .modal-dialog,
+    #quickAddBomModal .modal-dialog,
+    .quick-estimate-nested-modal {
+        margin: 1.5rem auto !important;
+        max-width: min(340px, calc(100vw - 2.5rem)) !important;
+        width: 100% !important;
+    }
+
+    #addCustomerModal .modal-header,
+    #quickAddBomModal .modal-header {
+        padding: 0.85rem 1rem;
+    }
+
+    #addCustomerModal .modal-body,
+    #quickAddBomModal .modal-body {
+        padding: 1rem;
+    }
+
+    #addCustomerModal .modal-footer,
+    #quickAddBomModal .modal-footer {
+        padding: 0.75rem 1rem;
+        gap: 0.5rem;
+    }
+
+    #addCustomerModal .modal-footer .btn,
+    #quickAddBomModal .modal-footer .btn {
+        min-width: 0;
+        padding-left: 0.85rem;
+        padding-right: 0.85rem;
+        font-size: 0.875rem;
+    }
+}
+
+.select2-container--bootstrap-5 .select2-dropdown .select2-search .select2-search__field {
+    box-sizing: border-box;
+    max-width: 100%;
+}
+
+#quickEstimateModal .quick-bom-select-col,
+#quickEstimateModal .quick-bom-select-col .d-flex,
+#quickEstimateModal .quick-bom-select-col .select2-container {
+    min-width: 0;
+}
+
+#quickEstimateModal .quick-bom-select-col .select2-container {
+    width: 100% !important;
+}
+
+#quickEstimateModal .quick-bom-select-col .select2-selection--single {
+    overflow: hidden;
+}
+
+#quickEstimateModal .quick-bom-select-col .select2-selection__rendered {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#quickEstimateModal .select2-container .select2-selection.is-invalid {
+    border-color: var(--bs-form-invalid-border-color, #dc3545) !important;
+}
+
+#quickEstimateModal .quick-bom-instruction,
+.estimate-bom-instruction {
+    padding: 0.65rem 0.85rem;
+    border: 1px dashed #121a33;
+    border-radius: 0.5rem;
+    background: rgba(18, 26, 51, 0.07);
+    color: #121a33;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.4;
+    margin-top:10px;
+}
+
+#quickEstimateModal .quick-bom-instruction {
+    margin-top: 10px;
+}
+
+#quickEstimateModal .quick-bom-instruction .bi,
+.estimate-bom-instruction .bi {
+    color: #121a33;
+}
+
+.estimate-header-actions,
+.invoice-header-actions {
+    min-width: 0;
+}
+
+.estimate-header-actions .btn,
+.invoice-header-actions .btn {
+    white-space: nowrap;
+}
+
+@media (max-width: 767.98px) {
+    .estimate-header-actions,
+    .invoice-header-actions {
+        flex-wrap: nowrap;
+    }
+
+    .estimate-header-actions .btn,
+    .invoice-header-actions .btn {
+        min-width: 0;
+        padding-left: 0.65rem;
+        padding-right: 0.65rem;
+        font-size: 0.8125rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    #quickEstimateModal .quick-bom-row .quick-bom-amount-col {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
+@media (min-width: 768px) {
+    #quickEstimateModal .quick-bom-row .quick-bom-select-col {
+        flex: 0 0 25%;
+        max-width: 25%;
+    }
+
+    #quickEstimateModal .quick-bom-row .quick-bom-make-col {
+        flex: 0 0 13%;
+        max-width: 13%;
+    }
+
+    #quickEstimateModal .quick-bom-row .quick-bom-qty-col {
+        flex: 0 0 7%;
+        max-width: 7%;
+    }
+
+    #quickEstimateModal .quick-bom-row .quick-bom-money-col {
+        flex: 0 0 16%;
+        max-width: 16%;
+    }
+
+    #quickEstimateModal .quick-bom-row .quick-bom-tax-col {
+        flex: 0 0 14%;
+        max-width: 14%;
+    }
+
+    #quickEstimateModal .quick-bom-row .quick-remove-bom-row {
+        min-width: 42px;
+    }
+
+    /* When BOM pricing is disabled, let the remaining fields fill the row. */
+    #quickEstimateModal.quick-estimate-base-price-mode .quick-bom-row .quick-bom-select-col {
+        flex: 0 0 45%;
+        max-width: 45%;
+    }
+
+    #quickEstimateModal.quick-estimate-base-price-mode .quick-bom-row .quick-bom-make-col {
+        flex: 0 0 32%;
+        max-width: 32%;
+    }
+
+    #quickEstimateModal.quick-estimate-base-price-mode .quick-bom-row .quick-bom-qty-col {
+        flex: 0 0 14.666667%;
+        max-width: 14.666667%;
+    }
+}
+
+.estimate-avatar {
+    width: 40px;
+    height: 40px;
+    font-weight: 600;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #6366f1, #22d3ee);
+}
+
+.estimate-badge {
+    font-size: 0.7rem;
+    line-height: 1.2;
+    border-radius: 999px;
+    padding: 0 0.5rem;
+}
+
+/* Form Styling */
+.totals-card {
+    background: #fff;
+    border-radius: 6px;
+    padding: 18px;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.totals-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 12px;
+    font-size: 15px;
+    color: #333;
+}
+
+.totals-card .totals-row > .crm-label-with-icon {
+    flex: 1 1 auto;
+    min-width: 0;
+    white-space: nowrap;
+}
+
+.totals-card .totals-row > .input-small {
+    flex: 0 0 auto;
+    width: 120px;
+    min-width: 120px;
+    max-width: 160px;
+}
+
+.input-small {
+    width: 120px;
+    min-width: 120px;
+    max-width: 160px;
+    flex-shrink: 0;
+    padding: 6px 10px;
+    font-size: 14px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    text-align: right;
+    background-color: #f8f9fa;
+    box-sizing: border-box;
+}
+
+#quickEstimateModal .quick-totals-card .totals-row > .input-small {
+    width: 120px;
+    min-width: 120px;
+    max-width: 160px;
+}
+
+.total-row {
+    font-weight: 600;
+    font-size: 16px;
+    color: #4f63d2;
+    margin-top: 8px;
+}
+
+/* Toggle Switch */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+}
+
+.switch input {
+    opacity: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    background-color: #ccc;
+    border-radius: 20px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transition: 0.3s;
+}
+
+.slider:before {
+    content: "";
+    position: absolute;
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+
+input:checked + .slider {
+    background-color: #4f63d2;
+}
+
+input:checked + .slider:before {
+    transform: translateX(20px);
+}
+
+/* BOM Section */
+.bom-section {
+    background-color: #fff;
+}
+
+.bom-row .form-select,
+.bom-row .form-control {
+    font-size: 14px;
+}
+
+.bom-row {
+    padding: 12px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    background-color: #f8f9fa;
+}
+
+.remove-bom-row {
+    cursor: pointer;
+    color: #dc3545;
+    transition: color 0.2s;
+}
+
+.remove-bom-row:hover {
+    color: #c82333;
+}
+
+
+/* Show/Preview View Styling */
+.estimation-preview-container {
+    max-width: 1000px;
+    margin: 20px auto;
+    background: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.preview-header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.preview-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.preview-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.preview-buttons .btn {
+    padding: 8px 16px;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+}
+
+.btn-pdf {
+    background-color: #dc2626;
+    color: white;
+}
+
+.btn-pdf:hover {
+    background-color: #b91c1c;
+}
+
+.btn-back {
+    background-color: #6b7280;
+    color: white;
+}
+
+.btn-back:hover {
+    background-color: #4b5563;
+}
+
+.quotation-box {
+    padding: 40px;
+    background-color: #fff;
+    min-height: 600px;
+}
+
+.quotation-header table {
+    width: 100%;
+    margin-bottom: 20px;
+    border-collapse: collapse;
+}
+
+.quotation-header td {
+    vertical-align: top;
+    padding: 5px 0;
+}
+
+.company-logo img {
+    max-width: 100px;
+    display: block;
+}
+
+.quotation-title {
+    font-size: 14px;
+    text-align: right;
+    color: #686868;
+    line-height: 1.6;
+}
+
+.info-table,
+.quotation-table,
+.extra-info table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    font-size: 13px;
+}
+
+.info-table th,
+.info-table td,
+.quotation-table th,
+.quotation-table td,
+.extra-info th,
+.extra-info td {
+    border: 1px solid #333;
+    padding: 10px;
+    text-align: left;
+}
+
+.info-table th,
+.quotation-table th,
+.extra-info th {
+    background-color: #1e3a8a;
+    color: #fff;
+    font-weight: bold;
+}
+
+.quotation-table tfoot td {
+    font-weight: bold;
+    text-align: right;
+}
+
+.flex-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-direction: row;
+}
+
+.center-text {
+    text-align: center;
+    font-weight: 700;
+    text-decoration: underline;
+    flex: 1;
+}
+
+.page-break {
+    page-break-before: always;
+    margin-top: 40px;
+}
+
+.bom-section h2 {
+    text-align: center;
+    color: #1e3a8a;
+    margin-bottom: 30px;
+    text-decoration: underline;
+    font-size: 18px;
+}
+
+.highlight-row {
+    background-color: #1e3a8a;
+    color: white;
+    font-weight: bold;
+}
+
+.highlight-row td {
+    background-color: #1e3a8a;
+    color: white;
+}
+
+.note-text {
+    font-size: 13px;
+    margin-top: 10px;
+    color: #555;
+}
+
+@media print {
+    .preview-header {
+        display: none;
+    }
+    .page-break {
+        page-break-before: always;
+    }
+}
+
+@media (max-width: 768px) {
+    .quotation-box {
+        padding: 20px;
+    }
+    .preview-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+    .preview-buttons .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

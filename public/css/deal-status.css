@@ -1,0 +1,9 @@
+.select2-container--bootstrap-5.deal-status-portal { width:auto !important; max-width:calc(100vw - 24px); }
+.deal-status-dropdown { border:1px solid #dce4ed !important; border-radius:12px !important; padding:6px; box-shadow:0 12px 28px rgba(7,28,44,.16); }
+.deal-status-dropdown .select2-results__option { border-radius:8px; padding:11px 14px !important; margin:3px 0; color:#102b42; }
+.deal-status-dropdown .select2-results__option[aria-selected="true"],
+.deal-status-dropdown .select2-results__option--selected { background:#071c2c !important; color:#fff !important; }
+.deal-status-dropdown .select2-results__option--highlighted[aria-selected="false"],
+.deal-status-dropdown .select2-results__option:not([aria-selected="true"]):not(.select2-results__option--selected):hover { background:#e0e9f1 !important; color:#071c2c !important; }
+[data-theme="dark"] .deal-status-dropdown { background:#142638; border-color:#344a60 !important; }
+[data-theme="dark"] .deal-status-dropdown .select2-results__option { color:#e2e8f0; }

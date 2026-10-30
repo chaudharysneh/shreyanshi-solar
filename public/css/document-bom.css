@@ -1,0 +1,26 @@
+.document-bom {
+    margin-top: 28px;
+    font-family: 'Outfit', system-ui, sans-serif;
+    color: var(--crm-text-body, #334155);
+}
+.document-bom-heading { display:flex; align-items:center; gap:14px; margin-bottom:18px; }
+.document-bom-icon { display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; width:46px; height:46px; border-radius:12px; background:#e8eef5; color:#0a2540; font-size:1.4rem; }
+.document-bom .document-bom-heading h2 { margin:0 0 4px; font-family:inherit; font-size:1.25rem; font-weight:700; color:var(--crm-text-dark,#0a2540); text-align:left; text-decoration:none; }
+.document-bom-heading p { margin:0; font-size:.85rem; color:var(--crm-text-muted,#64748b); }
+.document-bom .table-responsive-wrapper { border:1px solid var(--crm-border,#e2e8f0); border-radius:14px; overflow:auto; box-shadow:0 3px 12px rgba(10,37,64,.04); }
+.document-bom table.quotation-table { width:100%; margin:0; border:0; border-collapse:separate; border-spacing:0; font-family:inherit; font-size:.9rem; }
+.document-bom table.quotation-table thead th { background:#0a2540 !important; color:#fff !important; padding:16px; border:0; font-size:.75rem; font-weight:600; letter-spacing:.035em; text-transform:uppercase; vertical-align:middle; text-align:left; white-space:nowrap; }
+.document-bom table.quotation-table tbody td { padding:18px 16px; border:0; border-bottom:1px solid var(--crm-border,#e2e8f0); background:var(--crm-bg-card,#fff); color:var(--crm-text-body,#334155); vertical-align:middle; font-size:.875rem; line-height:1.65; }
+.document-bom table.quotation-table tbody tr:hover td { background:var(--crm-bg-soft,#f8fafc); }
+.document-bom--estimates table.quotation-table tbody td:first-child,
+.document-bom--invoices table.quotation-table tbody td:nth-child(2) { font-weight:600; text-align:left; min-width:150px; }
+.document-bom table.quotation-table th:nth-last-child(-n+3),
+.document-bom table.quotation-table td:nth-last-child(-n+3) { text-align:right; white-space:nowrap; }
+.document-bom table.quotation-table tfoot td { padding:16px; background:var(--crm-bg-soft,#f1f5f9) !important; color:var(--crm-text-dark,#0a2540) !important; border:0; font-weight:700; }
+.document-bom table.quotation-table tfoot td:last-child { background:#0a2540 !important; color:#fff !important; }
+.document-bom table.quotation-table img { border-radius:10px; object-fit:contain; }
+@media(max-width:767px) {
+    .document-bom .document-bom-heading h2 { font-size:1.05rem; }
+    .document-bom table.quotation-table { min-width:650px; }
+    .document-bom table.quotation-table tbody td { padding:14px 12px; }
+}

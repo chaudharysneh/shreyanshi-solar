@@ -1,0 +1,144 @@
+.status-switch .form-check-input {
+    width: 2.25rem;
+    height: 1.15rem;
+    border: 1px solid #D0D5DD;
+    background-color: #F2F4F7;
+    border-radius: 999px;
+}
+
+.status-switch .form-check-input:checked {
+    background-color: #2563EB;
+    border-color: #2563EB;
+}
+
+.status-switch .form-check-input:focus {
+    box-shadow: 0 0 0 0.15rem rgba(37, 99, 235, 0.25);
+}
+
+#stageModal .modal-dialog {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#stageModal .modal-dialog-centered {
+    min-height: calc(100% - 3.5rem);
+}
+
+.stages-toolbar {
+    gap: 1rem;
+}
+
+#stagesTable thead th {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #64748b;
+    border-bottom: 1px solid #e2e8f0;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    background-color: transparent;
+}
+
+#stagesTable tbody td {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    vertical-align: middle;
+}
+
+#stagesTable tbody tr:hover {
+    background-color: rgba(59, 130, 246, 0.02);
+}
+
+#stagesTable tbody td:nth-child(3),
+#stagesTable thead th:nth-child(3) {
+    width: 180px !important;
+    white-space: nowrap;
+}
+
+#stagesTable tbody td:nth-child(4),
+#stagesTable thead th:nth-child(4) {
+    width: 180px !important;
+}
+
+#stagesTable .badge {
+    min-width: 90px;
+    padding: 0.38rem 0.85rem !important;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.crm-action-btn {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background-color: #ffffff;
+    color: #475569;
+    transition: all 0.2s ease;
+}
+
+.crm-action-btn:hover {
+    border-color: #cbd5e1;
+    background-color: #f8fafc;
+    color: #0f172a;
+    transform: translateY(-1px);
+}
+
+.crm-action-btn.text-danger:hover {
+    background-color: #fef2f2;
+    border-color: #fecaca;
+    color: #ef4444 !important;
+}
+
+.crm-pagination-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.crm-pagination .page-link {
+    border-radius: 8px !important;
+    margin: 0 3px;
+    border: 1px solid #e2e8f0;
+    color: #475569;
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 0.45rem 0.85rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    transition: all 0.2s ease;
+}
+
+.crm-pagination .page-link:hover {
+    background-color: #f8fafc;
+    color: #0f172a;
+    border-color: #0f172a;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.crm-pagination .page-item.active .page-link {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+    border-color: #0f172a !important;
+    color: #fff !important;
+    box-shadow: 0 6px 12px rgba(15, 23, 42, 0.2);
+}
+
+.crm-pagination .page-item.disabled .page-link {
+    background-color: #f8fafc;
+    color: #cbd5e1;
+    border-color: #f1f5f9;
+    box-shadow: none;
+    cursor: not-allowed;
+}
+
+@media (max-width: 767.98px) {
+    #stagesTable td {
+        padding: 1rem 0.75rem;
+    }
+}

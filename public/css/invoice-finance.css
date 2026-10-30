@@ -1,0 +1,38 @@
+.invoice-finance-modal .modal-header { background:#071c2c; color:#fff; padding:20px 24px; }
+.invoice-finance-modal .modal-header h5,.invoice-finance-modal .modal-header .small { color:#fff !important; }
+.invoice-finance-modal .form-label { font-size:.8rem; font-weight:600; }
+.invoice-finance-section { border:1px solid #e0e7ef; border-radius:12px; padding:18px; }
+.invoice-finance-section h6 { font-weight:700; margin-bottom:16px; }
+.invoice-finance-kpis { display:grid;grid-template-columns:repeat(4,1fr);gap:12px; }
+.invoice-finance-kpis > div { border:1px solid #e0e7ef;border-left:3px solid #315b88;border-radius:11px;padding:14px;background:#f6f9fc; }
+.invoice-finance-kpis span { display:block;font-size:.72rem;color:#63748a; }
+.invoice-finance-kpis strong { display:block;margin-top:6px;font-size:1.1rem;color:#0a2540;overflow-wrap:anywhere; }
+.invoice-finance-panel { border:1px solid #e0e7ef;border-radius:16px;padding:22px;background:#fff; }
+.invoice-finance-panel .invoice-finance-kpis { grid-template-columns:repeat(4,1fr); }
+.invoice-finance-audit { border-left:2px solid #cdddec;padding:0 0 14px 14px;font-size:.78rem; }
+.invoice-finance-audit time { font-size:.7rem;color:#64748b; }
+[data-theme="dark"] .invoice-finance-section,[data-theme="dark"] .invoice-finance-panel { background:#112233;border-color:#304357; }
+[data-theme="dark"] .invoice-finance-kpis > div { background:#182b3d;border-color:#304357;border-left-color:#8aaed0; }
+[data-theme="dark"] .invoice-finance-kpis strong { color:#e2ebf5; }
+[data-theme="dark"] .invoice-finance-kpis span { color:#a0b2c5; }
+@media(max-width:767.98px) { .invoice-finance-kpis,.invoice-finance-panel .invoice-finance-kpis { grid-template-columns:repeat(2,1fr); } }
+
+.invoice-finance-panel .invoice-finance-kpis > div:nth-child(odd) { border-left-color:#15803d;background:#f3faf7; }
+.invoice-finance-panel .invoice-finance-kpis > div:nth-child(even) { border-left-color:#b45309;background:#fffbf2; }
+[data-theme="dark"] .invoice-finance-panel .invoice-finance-kpis > div { background:#182b3d; }
+
+#invoiceFinanceModal .select2-container { min-width:0; flex:1; }
+.finance-master-dropdown .select2-results__option[aria-selected="true"],
+.finance-master-dropdown .select2-results__option--selected { background:#0b2942!important;color:#fff!important; }
+.finance-master-dropdown .select2-results__option--highlighted[aria-selected="false"],
+.finance-master-dropdown .select2-results__option--highlighted:not(.select2-results__option--selected) { background:#e5edf4!important;color:#0b2942!important; }
+
+.finance-disbursement-tools {padding:18px;border:1px solid #dce5ee;border-left:4px solid #0b2942;border-radius:12px;background:#f5f8fb;}
+[data-theme="dark"] .finance-disbursement-tools {background:#182b3d;border-color:#304357;}
+
+.finance-report-filters {display:grid;grid-template-columns:minmax(0,1.5fr) repeat(4,minmax(0,1fr)) 84px;gap:16px;align-items:end;}
+.finance-report-filters .finance-filter-field {min-width:0;}
+.finance-report-filters .select2-container {max-width:100%;}
+.finance-report-filters .finance-filter-clear .btn {padding-left:8px;padding-right:8px;white-space:nowrap;}
+@media(max-width:991.98px){.finance-report-filters {grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:575.98px){.finance-report-filters {grid-template-columns:minmax(0,1fr);}}

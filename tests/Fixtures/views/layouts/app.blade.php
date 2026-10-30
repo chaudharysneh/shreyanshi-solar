@@ -1,0 +1,1 @@
+<!doctype html><html><head>@stack('styles')</head><body>@yield('content')@stack('scripts')</body></html>

@@ -1,0 +1,78 @@
+@extends('layouts.app')
+
+@section('page_title', 'Sales')
+
+@push('styles')
+    <link rel="stylesheet"
+        href="{{ crm_asset('css/users.css') }}">
+@endpush
+
+@section('content')
+    <div class="container-fluid p-0">
+        <div class="card border-0 shadow-sm overflow-hidden">
+            <div class="card-header border-bottom-0 py-3 px-4">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+                    <div>
+                        <h4 class="fw-bold mb-0">Manage Sales</h4>
+                        <p class="text-muted small mb-0">Track all material OUT transactions.</p>
+                    </div>
+                    <div class="d-flex flex-wrap gap-2">
+                        @if (auth()->user()?->hasMatrixPermission('view_products'))
+                            <a href="{{ route('sales.export') }}" class="btn btn-outline-dark-blue" id="salesExportBtn">
+                                <i class="fa-solid fa-download me-1"></i>Export
+                            </a>
+                        @endif
+                        @can('sales.create')
+                            <a href="{{ route('sales.create') }}" class="btn btn-dark-blue">
+                                <i class="bi bi-plus-lg me-1"></i>Material OUT
+                            </a>
+                        @endcan
+                    </div>
+                </div>
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                    <h6 class="fw-bold mb-0">Sales List</h6>
+                    <div class="input-group input-group-sm" style="max-width: 300px; width: 100%;">
+                        <span class="input-group-text crm-search-icon border-0"><i class="bi bi-search"></i></span>
+                        <input type="text" class="form-control crm-search-input border-0" placeholder="Search sales..."
+                            id="salesSearch" value="{{ request('search') }}">
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 responsive-table" id="salesTable">
+                    <thead>
+                        <tr>
+                            <th class="ps-4 text-center" style="width: 60px;">Sr.No</th>
+                            <th class="text-center">Site Name</th>
+                            <th class="d-none d-md-table-cell text-center">OUT No</th>
+                            <th class="d-none d-md-table-cell text-center">OUT Date</th>
+                            <th class="text-end pe-4 d-none d-md-table-cell" style="width: 120px;">Action</th>
+                            <th class="text-center d-md-none" style="width: 80px;">Action</th>
+                        </tr>
+                    </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <div class="card-footer border-top-0 py-4 px-4" id="salesPagination"></div>
+            </div>
+        </div>
+    </div>
+@endsection
+
+@push('scripts')
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        window.crmUserPermissions = {
+            sales: {
+                view: @json(auth()->user()?->hasMatrixPermission('view_sales')),
+                create: @json(auth()->user()?->hasMatrixPermission('create_sales')),
+                edit: @json(auth()->user()?->hasMatrixPermission('edit_sales')),
+                delete: @json(auth()->user()?->hasMatrixPermission('delete_sales')),
+            }
+        };
+    </script>
+    <script src="{{ crm_asset('js/sales.js') }}"></script>
+@endpush
