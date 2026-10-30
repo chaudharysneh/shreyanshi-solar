@@ -461,6 +461,8 @@ if ($passedEstimate) {
     if (isset($passedEstimate->customer)) {
         $estdata->name = $passedEstimate->customer->name ?? '--';
         $estdata->address = $passedEstimate->customer->address ?? '';
+        $estdata->phone = $passedEstimate->customer->phone ?? '--';
+        $estdata->email = $passedEstimate->customer->email ?? '--';
     }
 }
 
