@@ -163,6 +163,7 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     Route::get('invoices', [InvoiceController::class, 'index'])->middleware('matrix_permission:view_invoices')->name('api.invoices.index');
     Route::post('invoices', [InvoiceController::class, 'store'])->middleware('matrix_permission:create_invoices')->name('api.invoices.store');
+    Route::get('invoices/price-suggestions', [InvoiceController::class, 'priceSuggestions'])->name('api.invoices.price-suggestions');
     Route::get('invoices/{invoice}', [InvoiceController::class, 'show'])->middleware('matrix_permission:view_invoices')->name('api.invoices.show');
     Route::put('invoices/{invoice}', [InvoiceController::class, 'update'])->middleware('matrix_permission:edit_invoices')->name('api.invoices.update');
     Route::patch('invoices/{invoice}', [InvoiceController::class, 'update'])->middleware('matrix_permission:edit_invoices');

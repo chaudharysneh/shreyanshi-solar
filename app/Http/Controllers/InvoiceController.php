@@ -31,7 +31,9 @@ class InvoiceController extends Controller
     {
         $this->authorize('create', Invoice::class);
         $customers = Customer::visibleTo(auth()->user())->orderBy('name')->get();
-        $bomProducts = BomProduct::with('categories')->orderBy('product_name')->get();
+        $bomProducts = BomProduct::with('categories')
+            ->orderByRaw("CASE UPPER(TRIM(product_name)) WHEN 'SUPPLY AND INSTALLATION' THEN 0 WHEN 'STRUCTURE FABRICATION WORK' THEN 1 ELSE 2 END")
+            ->orderBy('product_name')->get();
         $templates = PdfBuilderForm::orderBy('template_name')->get();
         $categories = Category::orderBy('name')->get();
         $subsidies = Subsidy::active()->get();
@@ -42,7 +44,9 @@ class InvoiceController extends Controller
         }
         $defaultCurrencyId = $this->defaultInvoiceCurrencyId();
 
-        return view('crm.invoices.create', compact('customers', 'bomProducts', 'templates', 'categories', 'subsidies', 'gstRate', 'gstTaxes', 'defaultCurrencyId'));
+        $estimatePriceMode = \App\Models\Setting::where('key', 'estimate_price_mode')->value('value') === 'base' ? 'base' : 'bom';
+
+        return view('crm.invoices.create', compact('customers', 'bomProducts', 'templates', 'categories', 'subsidies', 'gstRate', 'gstTaxes', 'defaultCurrencyId', 'estimatePriceMode'));
     }
 
     public function edit(Invoice $invoice)
@@ -50,7 +54,9 @@ class InvoiceController extends Controller
         $this->authorize('update', $invoice);
         $invoice->load('items');
         $customers = Customer::visibleTo(auth()->user())->orderBy('name')->get();
-        $bomProducts = BomProduct::with('categories')->orderBy('product_name')->get();
+        $bomProducts = BomProduct::with('categories')
+            ->orderByRaw("CASE UPPER(TRIM(product_name)) WHEN 'SUPPLY AND INSTALLATION' THEN 0 WHEN 'STRUCTURE FABRICATION WORK' THEN 1 ELSE 2 END")
+            ->orderBy('product_name')->get();
         $templates = PdfBuilderForm::orderBy('template_name')->get();
         $categories = Category::orderBy('name')->get();
         $subsidies = Subsidy::active()->get();
@@ -61,7 +67,9 @@ class InvoiceController extends Controller
         }
         $defaultCurrencyId = $this->defaultInvoiceCurrencyId();
 
-        return view('crm.invoices.edit', compact('invoice', 'customers', 'bomProducts', 'templates', 'categories', 'subsidies', 'gstRate', 'gstTaxes', 'defaultCurrencyId'));
+        $estimatePriceMode = $this->resolveInvoicePriceMode($invoice);
+
+        return view('crm.invoices.edit', compact('invoice', 'customers', 'bomProducts', 'templates', 'categories', 'subsidies', 'gstRate', 'gstTaxes', 'defaultCurrencyId', 'estimatePriceMode'));
     }
 
     // status update
@@ -291,4 +299,34 @@ class InvoiceController extends Controller
 
         return $currencyId ? (int) $currencyId : null;
     }
+    private function resolveInvoicePriceMode(Invoice $estimate): string
+    {
+        if (in_array($estimate->price_mode, ['base', 'bom'], true)) {
+            return $estimate->price_mode;
+        }
+
+        $breakdown = is_array($estimate->gst_breakdown)
+            ? $estimate->gst_breakdown
+            : (json_decode((string) $estimate->gst_breakdown, true) ?: []);
+
+        foreach (($breakdown['groups'] ?? []) as $group) {
+            $taxType = (string) ($group['tax_type'] ?? '');
+            if ($taxType === 'global_tax') {
+                return 'base';
+            }
+            if ($taxType === 'bom_selected_tax') {
+                return 'bom';
+            }
+        }
+
+        $products = is_array($estimate->product_name)
+            ? $estimate->product_name
+            : (json_decode((string) $estimate->product_name, true) ?: []);
+        $bomTotal = collect($products)->sum(function ($product) {
+            return (float) ($product['quantity'] ?? 0) * (float) ($product['price'] ?? 0);
+        });
+
+        return (float) $estimate->price > 0 && $bomTotal <= 0 ? 'base' : 'bom';
+    }
+
 }

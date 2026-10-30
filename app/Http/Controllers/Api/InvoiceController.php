@@ -8,6 +8,7 @@ use App\Models\Currency;
 use App\Models\Invoice;
 use App\Models\Product;
 use App\Models\BomProduct;
+use App\Models\Tax;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +17,26 @@ use Illuminate\Support\Facades\Validator;
 
 class InvoiceController extends ApiBaseController
 {
+    public function priceSuggestions(Request $request)
+    {
+        $user = auth()->user();
+        abort_unless($user && ($user->isAdmin()
+            || $user->hasMatrixPermission('create_invoices')
+            || $user->hasMatrixPermission('edit_invoices')), 403);
+
+        $data = $request->validate(['quantity' => 'required|numeric|gt:0']);
+        $quantity = (float) $data['quantity'];
+
+        return response()->json([
+            'success' => true,
+            'quantity' => $quantity,
+            'suggestions' => array_map(fn ($rate) => [
+                'rate_per_kw' => $rate,
+                'price' => (int) round($quantity * $rate),
+            ], [30000, 40000, 45000]),
+        ]);
+    }
+
     public function __construct()
     {
         $this->middleware('can:viewAny,' . Invoice::class)->only('index');
@@ -103,13 +124,31 @@ class InvoiceController extends ApiBaseController
     {
         $this->authorize('create', Invoice::class);
 
+        $priceMode = $request->input('price_mode');
+        if (!in_array($priceMode, ['base', 'bom'], true)) {
+            $priceMode = isset($invoice) ? $this->resolveInvoicePriceMode($invoice)
+                : (\App\Models\Setting::where('key', 'estimate_price_mode')->value('value') === 'base' ? 'base' : 'bom');
+        }
+        $useBomPrice = $priceMode === 'bom';
+
         $validator = Validator::make($request->all(), [
             'customer_id' => 'required|exists:customers,id',
             'invoice_name' => 'required|string|min:1',
             'type' => 'required|in:residential,commercial,industrial,common meter,ground mounted,ux template',
             'quantity' => 'required|numeric|gt:0',
-            'price' => 'required|numeric|gt:0',
-            'template_id' => 'nullable|exists:pdf_builder_forms,id',
+            'price' => $useBomPrice ? 'required|numeric|min:0' : 'required|numeric|gt:0',
+            'price_mode' => 'nullable|in:base,bom',
+            'reference_no' => 'nullable|string|max:255',
+            'terms_conditions' => 'nullable|string|max:10000',
+            'bom_specifications' => 'nullable|array',
+            'bom_specifications.*' => 'array:make,technical',
+            'bom_specifications.*.make' => 'nullable|string|max:2000',
+            'bom_specifications.*.technical' => 'nullable|string|max:10000',
+            'global_tax_rate' => 'nullable|numeric|min:0',
+            'solar_structure_charges' => 'nullable|numeric|min:0',
+            'discount' => 'nullable|numeric|min:0',
+            'subsidy_amount' => 'nullable|numeric|min:0',
+            'template_id' => 'required|exists:pdf_builder_forms,id',
             'solar_meter_charges' => 'required|in:as_per_actual,as_per_client_scope,included',
             'invoice_date' => 'nullable|date',
             'products' => 'nullable|json',
@@ -140,7 +179,7 @@ class InvoiceController extends ApiBaseController
             $invoiceName = $request->input('invoice_name');
             $type = $request->input('type');
             $quantity = (float) $request->input('quantity', 0);
-            $price = (float) $request->input('price', 0);
+            $price = $useBomPrice ? 0 : (float) $request->input('price', 0);
             $templateId = (int) $request->input('template_id', 0);
             $solarMeterCharges = $request->input('solar_meter_charges', '');
             $solarStructureCharges = (float) ($request->input('solar_structure_charges') ?? 0);
@@ -169,6 +208,13 @@ class InvoiceController extends ApiBaseController
 
             // Parse products JSON (from BOM), with fallback to raw form arrays.
             $products = $this->normalizeInvoiceProducts($request);
+            if (!$useBomPrice) {
+                $products = array_map(function (array $product) {
+                    $product['price'] = 0;
+                    $product['tax_rate'] = 0;
+                    return $product;
+                }, $products);
+            }
             $productsTotal = $this->calculateProductsTotal($products);
 
             // Validate at least one product selected
@@ -181,6 +227,7 @@ class InvoiceController extends ApiBaseController
             }
 
             if (!$hasProduct) {
+                DB::rollBack();
                 return response()->json([
                     'success' => false,
                     'message' => 'Please select at least one BOM',
@@ -193,7 +240,9 @@ class InvoiceController extends ApiBaseController
             // Calculate subtotal and GST from BOM-selected taxes.
             $basePrice = $price + $productsTotal;
             $subtotal = $basePrice + $solarStructureCharges;
-            $gstBreakdown = $this->buildProductGstBreakdown($products, (bool) $applyCharges);
+            $gstBreakdown = $useBomPrice
+                ? $this->buildProductGstBreakdown($products, (bool) $applyCharges)
+                : $this->buildGlobalTaxBreakdown($subtotal, (float) $request->input('global_tax_rate', 0));
             $gstPercent = $applyCharges ? $gstBreakdown['tax_rate'] : 0;
             $gstAmount = $applyCharges ? $gstBreakdown['gst_amount'] : 0;
 
@@ -216,6 +265,9 @@ class InvoiceController extends ApiBaseController
                 'user_id' => $userId,
                 'product_id' => $request->input('product_id'),
                 'invoice_no' => $invoiceNo,
+                'reference_no' => $request->input('reference_no'),
+                'terms_conditions' => $request->input('terms_conditions'),
+                'bom_specifications' => $request->input('bom_specifications'),
                 'invoice_date' => $invoiceDate,
                 'invoice_name' => $invoiceName,
                 'type' => $type,
@@ -223,15 +275,17 @@ class InvoiceController extends ApiBaseController
                 'attach_file' => $attachFile,
                 'quantity' => $quantity,
                 'price' => $price,
+                'price_mode' => $priceMode,
                 'solar_structure_charges' => $solarStructureCharges,
                 'solar_meter_charges' => $solarMeterCharges,
                 'template_id' => $templateId ?: null,
-                'product_name' => json_encode($products),
+                'product_name' => $products,
                 'status' => 'pending',
                 'comment' => $comment,
                 'total' => $subtotal,
                 'gst' => $gstPercent,
                 'gst_amount' => $gstAmount,
+                'gst_breakdown' => $applyCharges ? $gstBreakdown : null,
                 'discount' => $discount,
                 'subsidy_amount' => $subsidyAmount,
                 'amount' => $finalAmount,
@@ -240,6 +294,10 @@ class InvoiceController extends ApiBaseController
                 'created_by' => $userId,
                 'updated_by' => $userId,
             ]);
+
+            if ($request->boolean('update_template_comment')) {
+                $this->updateTemplateEstimateComment($templateId, $comment);
+            }
 
             app(\App\Services\UserLogService::class)->created($invoice, 'Created an Invoice ' . $invoice->invoice_no);
 
@@ -278,13 +336,31 @@ class InvoiceController extends ApiBaseController
     {
         $this->authorize('update', $invoice);
 
+        $priceMode = $request->input('price_mode');
+        if (!in_array($priceMode, ['base', 'bom'], true)) {
+            $priceMode = isset($invoice) ? $this->resolveInvoicePriceMode($invoice)
+                : (\App\Models\Setting::where('key', 'estimate_price_mode')->value('value') === 'base' ? 'base' : 'bom');
+        }
+        $useBomPrice = $priceMode === 'bom';
+
         $validator = Validator::make($request->all(), [
             'customer_id' => 'required|exists:customers,id',
             'invoice_name' => 'required|string|min:1',
             'type' => 'required|in:residential,commercial,industrial,common meter,ground mounted,ux template',
             'quantity' => 'required|numeric|gt:0',
-            'price' => 'required|numeric|gt:0',
-            'template_id' => 'nullable|exists:pdf_builder_forms,id',
+            'price' => $useBomPrice ? 'required|numeric|min:0' : 'required|numeric|gt:0',
+            'price_mode' => 'nullable|in:base,bom',
+            'reference_no' => 'nullable|string|max:255',
+            'terms_conditions' => 'nullable|string|max:10000',
+            'bom_specifications' => 'nullable|array',
+            'bom_specifications.*' => 'array:make,technical',
+            'bom_specifications.*.make' => 'nullable|string|max:2000',
+            'bom_specifications.*.technical' => 'nullable|string|max:10000',
+            'global_tax_rate' => 'nullable|numeric|min:0',
+            'solar_structure_charges' => 'nullable|numeric|min:0',
+            'discount' => 'nullable|numeric|min:0',
+            'subsidy_amount' => 'nullable|numeric|min:0',
+            'template_id' => 'required|exists:pdf_builder_forms,id',
             'solar_meter_charges' => 'required|in:as_per_actual,as_per_client_scope,included',
             'invoice_date' => 'nullable|date',
             'products' => 'nullable|json',
@@ -315,7 +391,7 @@ class InvoiceController extends ApiBaseController
             $invoiceName = $request->input('invoice_name');
             $type = $request->input('type');
             $quantity = (float) $request->input('quantity', 0);
-            $price = (float) $request->input('price', 0);
+            $price = $useBomPrice ? 0 : (float) $request->input('price', 0);
             $templateId = (int) $request->input('template_id', 0);
             $solarMeterCharges = $request->input('solar_meter_charges', '');
             $solarStructureCharges = (float) ($request->input('solar_structure_charges') ?? 0);
@@ -344,6 +420,13 @@ class InvoiceController extends ApiBaseController
 
             // Parse products JSON, with fallback to raw form arrays.
             $products = $this->normalizeInvoiceProducts($request);
+            if (!$useBomPrice) {
+                $products = array_map(function (array $product) {
+                    $product['price'] = 0;
+                    $product['tax_rate'] = 0;
+                    return $product;
+                }, $products);
+            }
             $productsTotal = $this->calculateProductsTotal($products);
 
             // Validate at least one product selected
@@ -356,6 +439,7 @@ class InvoiceController extends ApiBaseController
             }
 
             if (!$hasProduct) {
+                DB::rollBack();
                 return response()->json([
                     'success' => false,
                     'message' => 'Please select at least one BOM',
@@ -368,7 +452,9 @@ class InvoiceController extends ApiBaseController
             // Calculate subtotal and GST from BOM-selected taxes.
             $basePrice = $price + $productsTotal;
             $subtotal = $basePrice + $solarStructureCharges;
-            $gstBreakdown = $this->buildProductGstBreakdown($products, (bool) $applyCharges);
+            $gstBreakdown = $useBomPrice
+                ? $this->buildProductGstBreakdown($products, (bool) $applyCharges)
+                : $this->buildGlobalTaxBreakdown($subtotal, (float) $request->input('global_tax_rate', 0));
             $gstPercent = $applyCharges ? $gstBreakdown['tax_rate'] : 0;
             $gstAmount = $applyCharges ? $gstBreakdown['gst_amount'] : 0;
 
@@ -391,21 +477,29 @@ class InvoiceController extends ApiBaseController
                 'type' => $type,
                 'quantity' => $quantity,
                 'price' => $price,
+                'price_mode' => $priceMode,
                 'solar_structure_charges' => $solarStructureCharges,
                 'solar_meter_charges' => $solarMeterCharges,
                 'template_id' => $templateId ?: null,
                 'currency_id' => $currencyId,
-                'product_name' => json_encode($products),
+                'product_name' => $products,
                 'comment' => $comment,
                 'total' => $subtotal,
                 'gst' => $gstPercent,
                 'gst_amount' => $gstAmount,
+                'gst_breakdown' => $applyCharges ? $gstBreakdown : null,
                 'discount' => $discount,
                 'subsidy_amount' => $subsidyAmount,
                 'amount' => $finalAmount,
                 'generation_data' => $generationData,
                 'updated_by' => auth()->id(),
             ];
+
+            foreach (['reference_no', 'terms_conditions', 'bom_specifications'] as $field) {
+                if ($request->exists($field)) {
+                    $updateData[$field] = $request->input($field);
+                }
+            }
 
             if (!empty($attachFile)) {
                 $updateData['attach_file'] = $attachFile;
@@ -416,6 +510,10 @@ class InvoiceController extends ApiBaseController
                 return response()->json(['success'=>false,'errors'=>['amount'=>['This invoice has finance records. Its total, customer and currency cannot be changed while those records exist.']]],422);
             }
             $invoice->update($updateData);
+
+            if ($request->boolean('update_template_comment')) {
+                $this->updateTemplateEstimateComment($templateId, $comment);
+            }
 
             app(\App\Services\UserLogService::class)->updated($invoice, 'Updated an Invoice ' . ($invoice->invoice_no ?: ('ID ' . $invoice->id)));
 
@@ -516,17 +614,24 @@ class InvoiceController extends ApiBaseController
                     'product_id' => $productId,
                     'name' => (string) ($product['name'] ?? ''),
                     'description' => (string) ($product['description'] ?? ''),
+                    'hsn_sac' => (string) ($product['hsn_sac'] ?? $product['hsn'] ?? ''),
                     'category_name' => (string) ($product['category_name'] ?? ''),
                     'quantity' => (float) ($product['quantity'] ?? 0),
                     'price' => (float) ($product['price'] ?? 0),
                     'tax_rate' => (float) ($product['tax_rate'] ?? 0),
                     'tax_label' => (string) ($product['tax_label'] ?? ''),
+                    ...array_map(
+                        fn ($value) => is_scalar($value) ? (string) $value : null,
+                        array_intersect_key($product, array_flip(['technology_id', 'warranty_id', 'height', 'fitting_material', 'fitting_type', 'thickness', 'size_of_pipe', 'capacity', 'meter', 'nos']))
+                    ),
                 ];
             }, $products)));
         }
 
         $serviceIds = (array) $request->input('service', []);
         $makes = (array) $request->input('product_make', []);
+        $descriptions = (array) $request->input('product_description', []);
+        $hsnSacCodes = (array) $request->input('product_hsn_sac', []);
         $quantities = (array) $request->input('product_qty', []);
         $prices = (array) $request->input('product_price', []);
         $taxRates = (array) $request->input('product_tax_rate', []);
@@ -535,7 +640,6 @@ class InvoiceController extends ApiBaseController
             return (string) $value !== '';
         })));
 
-        // Check BomProduct first as that is what's used in the Create/Edit view
         $productsById = BomProduct::query()
             ->whereIn('id', $productIds)
             ->get()
@@ -552,7 +656,8 @@ class InvoiceController extends ApiBaseController
             $normalized[] = [
                 'product_id' => (string) $serviceId,
                 'name' => (string) ($product->product_name ?? ''),
-                'description' => (string) ($product->description ?? ''),
+                'description' => (string) ($descriptions[$index] ?? $product->description ?? ''),
+                'hsn_sac' => (string) ($hsnSacCodes[$index] ?? $product->hsn_sac ?? ''),
                 'category_name' => (string) ($makes[$index] ?? ''),
                 'quantity' => (float) ($quantities[$index] ?? 0),
                 'price' => array_key_exists($index, $prices)
@@ -671,4 +776,103 @@ class InvoiceController extends ApiBaseController
 
         return $resolvedId ? (int) $resolvedId : null;
     }
+    private function buildGlobalTaxBreakdown(float $taxableAmount, float $rate): array
+    {
+        if ($rate <= 0 || $taxableAmount <= 0) {
+            return ['tax_rate' => 0, 'gst_amount' => 0, 'groups' => []];
+        }
+
+        $tax = Tax::active()->get()->first(function (Tax $tax) use ($rate) {
+            return abs((float) $tax->rate - $rate) < 0.001;
+        });
+
+        if (!$tax) {
+            return ['tax_rate' => 0, 'gst_amount' => 0, 'groups' => []];
+        }
+
+        $label = trim((string) $tax->name);
+        $upperLabel = strtoupper($label);
+        $lines = [];
+
+        if (str_contains($upperLabel, 'CGST') && str_contains($upperLabel, 'SGST')) {
+            $halfRate = $rate / 2;
+            foreach (['CGST', 'SGST'] as $splitLabel) {
+                $lines[] = [
+                    'label' => $splitLabel,
+                    'rate' => round($halfRate, 2),
+                    'amount' => round(($taxableAmount * $halfRate) / 100, 2),
+                ];
+            }
+        } else {
+            $lines[] = [
+                'label' => str_contains($upperLabel, 'IGST') ? 'IGST' : ($label ?: 'GST'),
+                'rate' => round($rate, 2),
+                'amount' => round(($taxableAmount * $rate) / 100, 2),
+            ];
+        }
+
+        return [
+            'tax_rate' => round($rate, 2),
+            'gst_amount' => round(array_sum(array_column($lines, 'amount')), 2),
+            'groups' => [[
+                'tax_type' => 'global_tax',
+                'taxable_amount' => round($taxableAmount, 2),
+                'lines' => $lines,
+            ]],
+        ];
+    }
+
+    private function resolveInvoicePriceMode(Invoice $estimate): string
+    {
+        if (in_array($estimate->price_mode, ['base', 'bom'], true)) {
+            return $estimate->price_mode;
+        }
+
+        $breakdown = is_array($estimate->gst_breakdown)
+            ? $estimate->gst_breakdown
+            : (json_decode((string) $estimate->gst_breakdown, true) ?: []);
+
+        foreach (($breakdown['groups'] ?? []) as $group) {
+            $taxType = (string) ($group['tax_type'] ?? '');
+            if ($taxType === 'global_tax') {
+                return 'base';
+            }
+            if ($taxType === 'bom_selected_tax') {
+                return 'bom';
+            }
+        }
+
+        $products = is_array($estimate->product_name)
+            ? $estimate->product_name
+            : (json_decode((string) $estimate->product_name, true) ?: []);
+        $bomTotal = collect($products)->sum(function ($product) {
+            return (float) ($product['quantity'] ?? 0) * (float) ($product['price'] ?? 0);
+        });
+
+        return (float) $estimate->price > 0 && $bomTotal <= 0 ? 'base' : 'bom';
+    }
+
+    private function updateTemplateEstimateComment(int $templateId, string $comment): void
+    {
+        if ($templateId <= 0) {
+            return;
+        }
+
+        $template = \App\Models\PdfBuilderForm::find($templateId);
+        if (!$template) {
+            return;
+        }
+
+        $formData = is_array($template->form_data) ? $template->form_data : [];
+        $existingComment = is_array($formData['estimate_comment'] ?? null) ? $formData['estimate_comment'] : [];
+
+        $formData['estimate_comment'] = array_merge($existingComment, [
+            'active' => 1,
+            'content' => $comment,
+        ]);
+
+        $template->form_data = $formData;
+        $template->save();
+    }
+
 }
