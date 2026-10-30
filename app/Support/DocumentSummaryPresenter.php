@@ -325,6 +325,8 @@ class DocumentSummaryPresenter
             'summaryCompanyName' => $companySettings['company_name'] ?? '--',
             'summaryCompanyAddress' => $companySettings['company_address'] ?? '',
             'summaryCompanyPhone' => $companySettings['phone'] ?? '',
+            'summaryCompanyEmail' => $companySettings['email'] ?? '',
+            'summaryCompanyTaxId' => $companySettings['company_tax_id'] ?? '',
             'summaryEstimateTypeLabel' => isset($estdata->type) ? ucfirst((string) $estdata->type) : '--',
             'summarySolarMeterLabel' => !empty($estdata->solar_meter_charges) ? ucwords(str_replace('_', ' ', (string) $estdata->solar_meter_charges)) : '--',
             'summaryEstimateComment' => $estdata->estimate_comment ?? ($estdata->comment ?? '--'),

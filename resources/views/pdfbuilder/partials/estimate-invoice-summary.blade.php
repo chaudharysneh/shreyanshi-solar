@@ -237,8 +237,12 @@ $summaryQrWidth = $summaryHasQr ? 100 * 25 / $summaryFooterWeight : 0;
         </td>
         <td width="55%" valign="top" align="right" style="<?= $summaryHeaderTextStyle ?>padding-bottom:8px;">
             <strong style="font-size:16px;"><?= esc($summaryCompanyName) ?></strong><br>
-            <?= esc($summaryCompanyAddress ?: '--') ?><br>
-            <?= esc($summaryCompanyPhone ?: '--') ?>
+            <?php foreach (\App\Support\DocumentAddress::lines($summaryCompanyAddress) as $addressLine): ?>
+                <div style="white-space:normal;word-wrap:break-word;"><?= esc($addressLine) ?></div>
+            <?php endforeach; ?>
+            <?php foreach (\App\Support\DocumentContact::lines($summaryCompanyPhone, $companySettings['email'] ?? $user['email'] ?? '', $companySettings['company_tax_id'] ?? '') as $contactLine): ?>
+                <div style="white-space:nowrap;"><?= esc($contactLine) ?></div>
+            <?php endforeach; ?>
         </td>
     </tr>
     <tr>

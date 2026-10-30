@@ -300,8 +300,13 @@ if (!isset($estdata) && isset($estimate)) {
                                 <strong
                                     style="font-size:18px;color:#000"><?php echo htmlspecialchars($settings['company_name'] ?? ($user['company'] ?? 'Rising Green Energy')); ?></strong><br>
                                 <div style="max-width: 250px; display: inline-block; text-align: right; white-space: normal;">
-                                    <?php echo htmlspecialchars($settings['company_address'] ?? ($user['address'] ?? '--')); ?>
+                                    <?php foreach (\App\Support\DocumentAddress::lines($settings['company_address'] ?? ($user['address'] ?? '')) as $addressLine): ?>
+                                        <div style="white-space:normal;word-wrap:break-word;"><?php echo htmlspecialchars($addressLine); ?></div>
+                                    <?php endforeach; ?>
                                 </div><br>
+                                <?php foreach (\App\Support\DocumentContact::lines($settings['phone'] ?? $user['phone'] ?? $user['contact'] ?? '', $settings['email'] ?? $user['email'] ?? '', $settings['company_tax_id'] ?? '') as $contactLine): ?>
+                                    <div style="white-space:nowrap;"><?php echo htmlspecialchars($contactLine); ?></div>
+                                <?php endforeach; ?>
                             </div>
                         </td>
                     </tr>

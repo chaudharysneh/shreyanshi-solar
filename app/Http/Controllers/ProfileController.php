@@ -231,7 +231,7 @@ class ProfileController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
-            'phone' => ['required', 'digits:10'],
+            'phone' => ['required', 'string', 'max:50'],
             'job_title' => ['nullable', 'string', 'max:255'],
             'company' => ['nullable', 'string', 'max:255'],
             'city' => ['nullable', 'string', 'max:255'],

@@ -154,8 +154,12 @@
             </td>
             <td width="55%" valign="top" align="right" class="summary-company-text" style="padding-bottom:8px;">
                 <strong style="font-size:16px;">{{ $summaryCompanyName ?? '--' }}</strong><br>
-                {{ $summaryCompanyAddress ?: '--' }}<br>
-                {{ $summaryCompanyPhone ?: '--' }}
+                @foreach (\App\Support\DocumentAddress::lines($summaryCompanyAddress) as $addressLine)
+                    <span style="display:block;white-space:normal;overflow-wrap:anywhere;">{{ $addressLine }}</span>
+                @endforeach
+                @foreach (\App\Support\DocumentContact::lines($summaryCompanyPhone ?? '', $summaryCompanyEmail ?? '', $summaryCompanyTaxId ?? '') as $contactLine)
+                    <div style="white-space:nowrap;">{{ $contactLine }}</div>
+                @endforeach
             </td>
         </tr>
         <tr>

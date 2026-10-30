@@ -325,10 +325,14 @@ if (!function_exists('base_url')) {
                         <div style="line-height:22px;color:#000">
                             <strong
                                 style="font-size:18px;color:#000">{{ $user->company_name ?? 'Company Name' }}</strong><br>
-                            {{ $user->address ?? '--' }}<br>
+                            @foreach (\App\Support\DocumentAddress::lines($settings['company_address'] ?? $user->address ?? '') as $addressLine)
+                                <div style="white-space:normal;word-wrap:break-word;">{{ $addressLine }}</div>
+                            @endforeach
                             {{ $user->country ?? '--' }}, {{ $user->state ?? '--' }}, {{ $user->city ?? '--' }}
                             {{ $user->pincode ?? '--' }}<br>
-                            {{ $user->contact ?? '--' }}
+                            @foreach (\App\Support\DocumentContact::lines($settings['phone'] ?? $user->phone ?? $user->contact ?? '', $settings['email'] ?? $user->email ?? '', $settings['company_tax_id'] ?? '') as $contactLine)
+                                <div style="white-space:nowrap;">{{ $contactLine }}</div>
+                            @endforeach
                         </div>
                     </td>
                 </tr>

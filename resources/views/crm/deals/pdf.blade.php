@@ -58,8 +58,14 @@
             </td>
             <td style="text-align:right;">
                 <div class="company">{{ mb_strtoupper($company) }}</div>
-                @if (!empty($settings['company_address']))<div class="company-info">{{ $settings['company_address'] }}</div>@endif
-                @if ($contact !== '')<div class="company-info">{{ $contact }}</div>@endif
+                @if (!empty($settings['company_address']))
+                    @foreach (\App\Support\DocumentAddress::lines($settings['company_address']) as $addressLine)
+                        <div class="company-info" style="white-space:normal;word-wrap:break-word;">{{ $addressLine }}</div>
+                    @endforeach
+                @endif
+                @foreach (\App\Support\DocumentContact::lines($settings['phone'] ?? '', $settings['email'] ?? '', $settings['company_tax_id'] ?? '') as $contactLine)
+                    <div class="company-info" style="white-space:nowrap;">{{ $contactLine }}</div>
+                @endforeach
             </td>
         </tr></table>
 

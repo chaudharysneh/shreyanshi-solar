@@ -589,7 +589,7 @@ $(document).ready(function () {
             rules: {
                 name: { required: true, maxlength: 255 },
                 email: { strictEmail: true, maxlength: 255 },
-                phone: { required: true, digits: true, minlength: 10, maxlength: 10 },
+                phone: { required: true, maxlength: 50 },
                 whatsapp: { maxlength: 50 },
                 image: { validImage: true, imageSize: true },
                 company_name: { maxlength: 255 },
@@ -605,8 +605,7 @@ $(document).ready(function () {
                 name: { required: 'Please enter customer name.' },
                 phone: {
                     required: 'Please enter phone number.',
-                    minlength: 'Phone number must be at least 10 digits.',
-                    maxlength: 'Phone number must not be greater than 10 digits.'
+                    maxlength: 'Phone number must not be greater than 50 characters.'
                 },
                 email: { strictEmail: 'Please enter a valid email address.' }
             },
