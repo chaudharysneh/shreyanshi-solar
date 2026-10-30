@@ -46,8 +46,8 @@ jobs:
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: 72.60.216.54
-          username: u573967329.devusrsolar
-          password: "]2Uhzp/uyp7X&xPP"
+          username: u573967329.sheyanshiftpusr
+          password: "e/a$aZ5O"
           server-dir: /
           local-dir: ./build_output/
           protocol: ftp
