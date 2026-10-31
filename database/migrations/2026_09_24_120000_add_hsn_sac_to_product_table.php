@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
+        if (Schema::hasColumn('product', 'hsn_sac')) {
+            return;
+        }
+
         Schema::table('product', function (Blueprint $table) {
             $table->string('hsn_sac')->nullable()->after('product_name');
         });
