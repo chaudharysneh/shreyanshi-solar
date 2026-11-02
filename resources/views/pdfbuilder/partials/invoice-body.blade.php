@@ -31,14 +31,6 @@
     $invoicePaise = (int) round(abs($summaryNetPayable) * 100);
     $invoiceWords = ($summaryNetPayable < 0 ? 'Minus ' : '') . 'Rupees ' . $spell(intdiv($invoicePaise, 100))
         . ($invoicePaise % 100 ? ' and ' . $spell($invoicePaise % 100) . ' Paise' : '') . ' Only';
-    $invoiceCustomer = $estimate->customer ?? null;
-    $customerDetail = static function ($value): string {
-        $value = trim((string) $value);
-        return in_array($value, ['-', '--'], true) ? '' : $value;
-    };
-    $invoicePhone = $customerDetail($invoiceCustomer->phone ?? $estdata->phone ?? '');
-    $invoiceBilling = $customerDetail($invoiceCustomer->address ?? $estdata->address ?? '');
-    $invoiceShipping = $customerDetail($invoiceCustomer->shipping_address ?? '') ?: $invoiceBilling;
     $savedDisplay = $estimate->table_display ?? $estdata->table_display ?? null;
     if (is_string($savedDisplay)) $savedDisplay = json_decode($savedDisplay, true);
     $tableDisplay = \App\Support\InvoiceTableDisplay::resolve(is_array($savedDisplay) ? $savedDisplay : null);
@@ -76,28 +68,8 @@
     .reference-invoice .items thead { display:table-header-group; }
     .reference-invoice .closing { page-break-inside:avoid; margin-top:7px; }
 </style>
+@include('pdfbuilder.partials.invoice-customer-header')
 <div class="reference-invoice">
-    <h2 style="text-align:center;color:#28643d;font-size:17px;letter-spacing:1.5px;line-height:1.15;margin:3px 0 2px;padding:0;">INVOICE</h2>
-    <table style="margin-bottom:7px;">
-        <tr>
-            <td style="vertical-align:bottom;"><strong>GSTIN:</strong> {{ $companySettings['company_tax_id'] ?? '--' }}</td>
-            <td style="text-align:right;"><strong>Invoice No.: {{ $summaryEstimateNo }}</strong><br>Date: {{ date('d-M-Y', strtotime($summaryDate)) }}</td>
-        </tr>
-    </table>
-    <table class="grid">
-        <tr><th>Billing Address</th><th>Shipping Address</th></tr>
-        <tr>
-            <td><strong>{{ $estdata->name ?? '--' }}</strong>
-                @if ($invoicePhone !== '')<br>Phone: {{ $invoicePhone }}@endif
-                @if ($invoiceBilling !== '')<br>{!! nl2br(e($invoiceBilling)) !!}@endif
-                @if (!empty($invoiceCustomer->tax_number))<br>GSTIN: {{ $invoiceCustomer->tax_number }}@endif
-            </td>
-            <td><strong>{{ $estdata->name ?? '--' }}</strong>
-                @if ($invoicePhone !== '')<br>Phone: {{ $invoicePhone }}@endif
-                @if ($invoiceShipping !== '')<br>{!! nl2br(e($invoiceShipping)) !!}@endif
-            </td>
-        </tr>
-    </table>
     <table class="grid items">
         <thead><tr>
             @foreach ($tableColumns as $column)

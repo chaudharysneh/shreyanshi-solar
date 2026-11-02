@@ -62,6 +62,18 @@ $summaryRightCellStyle = $summaryCellStyle . 'text-align:right;';
 $summaryHighlightCellStyle = $summaryRightCellStyle . 'background-color:#4b9349;color:#fff;font-weight:bold;';
 $summaryHeaderTextStyle = "font-size:13.5px;font-family:'Montserrat',sans-serif;color:#000;line-height:1.45;";
 $summaryEstimationHeaderTextStyle = "font-size:16px;font-family:'Montserrat',sans-serif;color:#000;line-height:1.45;";
+// Keep the original summary layout while matching the invoice's current palette.
+if (!empty($invoiceOnly)) {
+    $summaryCellStyle = str_replace(['#333', '#000'], ['#cbdcd0', '#24372d'], $summaryCellStyle);
+    $summaryHeaderCellStyle = str_replace(['#4b9349', '#fff', '#333'], ['#eaf3ec', '#245d38', '#cbdcd0'], $summaryHeaderCellStyle);
+    $summaryFooterHeaderCellStyle = str_replace(['#4b9349', '#fff', '#333'], ['#eaf3ec', '#245d38', '#cbdcd0'], $summaryFooterHeaderCellStyle);
+    $summaryFooterCellStyle = str_replace(['#333', '#000'], ['#cbdcd0', '#24372d'], $summaryFooterCellStyle) . 'background-color:#f5f9f6;';
+    $summaryRightCellStyle = $summaryCellStyle . 'text-align:right;';
+    $summaryHighlightCellStyle = $summaryRightCellStyle . 'background-color:#327548;color:#fff;font-weight:bold;';
+}
+$summaryPricingHeaderStyle = !empty($invoiceOnly)
+    ? $summaryHeaderCellStyle . 'background-color:#327548;color:#fff;border-color:#327548;'
+    : $summaryHeaderCellStyle;
 $summaryEstimateNo = $estdata->estimate_no ?? ($estimate_no ?? '--');
 $summaryDate = ($estdata && !empty($estdata->estimate_date)) ? date('Y-m-d', strtotime($estdata->estimate_date)) : date('Y-m-d');
 $summaryCompanyName = $companySettings['company_name'] ?? $globalCompanyName ?? '--';
@@ -250,8 +262,11 @@ $summaryQrWidth = $summaryHasQr ? 100 * 25 / $summaryFooterWeight : 0;
     </tr>
 </table>
 
-@if (!empty($invoiceOnly))
+@if (!empty($invoiceOnly) && !$summaryUsesGlobalTax)
     @include('pdfbuilder.partials.invoice-body')
+@else
+@if (!empty($invoiceOnly))
+    @include('pdfbuilder.partials.invoice-customer-header')
 @else
 <table width="98%" align="center" cellpadding="0" cellspacing="0" style="margin-bottom:8px;border-collapse:collapse;">
     <tr>
@@ -279,10 +294,12 @@ $summaryQrWidth = $summaryHasQr ? 100 * 25 / $summaryFooterWeight : 0;
     </tr>
 </table>
 
+@endif
+
 <table width="98%" align="center" cellpadding="0" cellspacing="0" style="margin-top:6px;border-collapse:collapse;">
     <tr>
-        <td style="<?= $summaryHeaderCellStyle ?>width:68%;">Description</td>
-        <td style="<?= $summaryHeaderCellStyle ?>width:32%;text-align:right;">Amount (<span style="font-family: DejaVu Sans, sans-serif;">&#8377;</span>)</td>
+        <td style="<?= $summaryPricingHeaderStyle ?>width:68%;">Description</td>
+        <td style="<?= $summaryPricingHeaderStyle ?>width:32%;text-align:right;">Amount (<span style="font-family: DejaVu Sans, sans-serif;">&#8377;</span>)</td>
     </tr>
     <?php if ($summaryUsesGlobalTax): ?>
     <tr>
@@ -406,7 +423,7 @@ $summaryQrWidth = $summaryHasQr ? 100 * 25 / $summaryFooterWeight : 0;
             <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;background-color:#f6fbf6;border:1px solid #cfe5cf;font-family:'DejaVu Sans',sans-serif;">
                 <?php if ($summaryBankName !== ''): ?>
                 <tr>
-                    <td colspan="2" style="background-color:#4b9349;color:#fff;padding:4px 6px;font-size:13px;font-family:'DejaVu Sans',sans-serif;font-weight:bold;letter-spacing:0.3px;">
+                    <td colspan="2" style="background-color:<?= !empty($invoiceOnly) ? '#327548' : '#4b9349' ?>;color:#fff;padding:4px 6px;font-size:13px;font-family:'DejaVu Sans',sans-serif;font-weight:bold;letter-spacing:0.3px;">
                         <?= esc($summaryBankName) ?>
                     </td>
                 </tr>
@@ -441,4 +458,10 @@ $summaryQrWidth = $summaryHasQr ? 100 * 25 / $summaryFooterWeight : 0;
 </table>
 <?php endif; ?>
 </div>
+@if (!empty($invoiceOnly) && trim((string) ($estdata->terms_conditions ?? '')) !== '')
+<div style="width:98%;margin:8px auto 0;font-family:'DejaVu Sans',sans-serif;font-size:12px;line-height:1.5;">
+    <strong>Terms &amp; Conditions</strong><br>
+    {!! nl2br(e($estdata->terms_conditions)) !!}
+</div>
+@endif
 @endif
