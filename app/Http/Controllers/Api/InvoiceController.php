@@ -577,14 +577,7 @@ class InvoiceController extends ApiBaseController
 
     private function generateNextInvoiceNumber(): string
     {
-        $numbers = Invoice::withTrashed()
-            ->lockForUpdate()
-            ->whereNotNull('invoice_no')
-            ->pluck('invoice_no');
-
-        $nextSequence = $this->extractHighestInvoiceSequence($numbers) + 1;
-
-        return 'INV-' . str_pad((string) $nextSequence, 5, '0', STR_PAD_LEFT);
+        return \App\Support\DocumentNumber::next('invoice');
     }
 
     private function extractHighestInvoiceSequence(Collection $numbers): int

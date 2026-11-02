@@ -1741,7 +1741,8 @@
                 const customerPhoneHtml = customerPhone
                     ? `<a class="small text-primary text-decoration-none text-nowrap" href="tel:${escapeHtml(phoneHref)}">${escapeHtml(customerPhone)}</a>` : '';
                 const estimateType = escapeHtml(String(estimate.type || '').replace(/\b\w/g, letter => letter.toUpperCase()));
-                const estimateNo = escapeHtml(estimate.estimate_no || '-');
+                const rawEstimateNo = String(estimate.estimate_no || '').replace(/^#?EST-/i, '');
+                const estimateNo = rawEstimateNo ? escapeHtml('#EST-' + rawEstimateNo.padStart(6, '0')) : '-';
                 const estimateDate = escapeHtml(formatDate(estimate.estimate_date));
                 const statusValue = String(estimate.status || '').toLowerCase();
                 const statusBadge = permissions.edit

@@ -198,6 +198,8 @@ class SettingController extends Controller
             'show_company_qr_code' => ['sometimes', 'boolean'],
             'show_company_signature' => ['sometimes', 'boolean'],
             'estimate_price_mode' => ['sometimes', 'required', 'in:base,bom'],
+            'estimate_number_start' => ['sometimes', 'nullable', 'integer', 'min:1', 'max:999999999'],
+            'invoice_number_start' => ['sometimes', 'nullable', 'integer', 'min:1', 'max:999999999'],
         ]);
 
         foreach ($validated as $key => $value) {

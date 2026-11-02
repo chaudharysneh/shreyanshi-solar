@@ -876,6 +876,21 @@
                             @method('PUT')
                             <input type="hidden" name="_settings_tab" value="estimate-invoice-setting">
                             <div class="mb-4">
+                                <h3 class="h6 fw-semibold">Document numbering</h3>
+                                <p class="text-muted small">Set the starting number for new estimates and invoices. For example, 200 starts at 200, then 201, 202. Existing numbers, including deleted records, are skipped. Existing documents are not renumbered.</p>
+                                <div class="row g-3">
+                                    @foreach (['estimate' => 'Estimate', 'invoice' => 'Invoice'] as $kind => $label)
+                                        <div class="col-md-6">
+                                            <label for="{{ $kind }}_number_start" class="form-label fw-semibold">{{ $label }} starting number</label>
+                                            <input type="number" name="{{ $kind }}_number_start" id="{{ $kind }}_number_start" min="1" max="999999999" step="1" class="form-control"
+                                                value="{{ old($kind . '_number_start', $settings[$kind . '_number_start']->value ?? '') }}" placeholder="Automatic">
+                                            <div class="form-text">Next available: {{ $kind === 'estimate' ? '#EST-' : '#' }}{{ \App\Support\DocumentNumber::next($kind) }}. Leave blank to continue after the highest number.</div>
+                                            @error($kind . '_number_start')<div class="text-danger small">{{ $message }}</div>@enderror
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                            <div class="mb-4">
                                 <label for="estimate_price_mode" class="form-label fw-semibold">Pricing Method</label>
                                 <div class="text-muted small mb-2">Choose how the estimate total should be calculated.</div>
                                 <select name="estimate_price_mode" id="estimate_price_mode" class="form-select" style="max-width: 420px;">

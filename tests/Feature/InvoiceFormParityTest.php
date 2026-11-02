@@ -23,6 +23,9 @@ class InvoiceFormParityTest extends TestCase
         parent::setUp();
         config(['database.default' => 'sqlite', 'database.connections.sqlite.database' => ':memory:']);
         DB::purge('sqlite');
+        Schema::create('settings', function (Blueprint $table) {
+            $table->id(); $table->string('key')->unique(); $table->text('value')->nullable(); $table->softDeletes();
+        });
         foreach (['customers', 'users', 'pdf_builder_forms', 'products', 'currencies', 'technology', 'warranty', 'product'] as $name) {
             Schema::create($name, function (Blueprint $table) {
                 $table->id();

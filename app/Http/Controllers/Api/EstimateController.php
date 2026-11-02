@@ -222,10 +222,7 @@ class EstimateController extends Controller
 
             $finalAmount = $subtotal + $gstAmount - $discount - $subsidyAmount;
 
-            // Generate estimate number (6-digit padded)
-            $lastEstimate = Estimate::orderBy('estimate_id', 'desc')->first();
-            $nextNo = $lastEstimate ? ((int) $lastEstimate->estimate_no + 1) : 1;
-            $estimateNo = str_pad($nextNo, 6, '0', STR_PAD_LEFT);
+            $estimateNo = \App\Support\DocumentNumber::next('estimate');
 
             // Generation data (ROI info from reference code)
             $monthlyBill = $request->input('monthly_electricity_bill', 3000);
@@ -1128,14 +1125,7 @@ class EstimateController extends Controller
 
     private function generateNextInvoiceNumber(): string
     {
-        $numbers = Invoice::withTrashed()
-            ->lockForUpdate()
-            ->whereNotNull('invoice_no')
-            ->pluck('invoice_no');
-
-        $nextSequence = $this->extractHighestInvoiceSequence($numbers) + 1;
-
-        return 'INV-' . str_pad((string) $nextSequence, 5, '0', STR_PAD_LEFT);
+        return \App\Support\DocumentNumber::next('invoice');
     }
 
     private function extractHighestInvoiceSequence(Collection $numbers): int
