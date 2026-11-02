@@ -89,4 +89,15 @@ class SolarDocumentTest extends TestCase
         $pdf->output();
         $this->assertSame(1,$pdf->getDomPDF()->getCanvas()->get_page_count());
     }
+    public function test_completion_report_converts_capacity_to_wp_and_uses_correct_charge_controller(): void {
+        $fields = $this->fields();
+        $fields['total_capacity'] = '4.95';
+        $sections = (new SolarDocument)->sections($fields);
+        $this->assertStringContainsString('Total Capacity (KWP)', $sections[0]);
+        $this->assertStringContainsString('4950 Wp', $sections[0]);
+        $this->assertStringContainsString('0.1 kW', $sections[0]);
+        $this->assertStringNotContainsString('0.3 kW', $sections[0]);
+        $this->assertStringNotContainsString('4.95 kWp', $sections[0]);
+        $this->assertStringContainsString('4.95 kW', implode('', array_slice($sections, 1)));
+    }
 }

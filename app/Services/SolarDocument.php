@@ -25,7 +25,7 @@ class SolarDocument
                     ob_start(); imagepng($resource); $bytes=ob_get_clean(); imagedestroy($resource);
                     $image['mime']='image/png';
                 }
-                $scale=min(450/$image[0],235/$image[1]);
+                $scale=min(495/$image[0],310/$image[1]);
                 $aadhaarWidth=round($image[0]*$scale,2); $aadhaarHeight=round($image[1]*$scale,2);
                 $aadhaarImage='data:'.$image['mime'].';base64,'.base64_encode($bytes);
             }

@@ -1,3 +1,9 @@
+@php
+    $capacityKwp = $value('total_capacity');
+    $capacityWp = is_numeric($capacityKwp)
+        ? rtrim(rtrim(number_format((float) $capacityKwp * 1000, 3, '.', ''), '0'), '.')
+        : $capacityKwp;
+@endphp
 <h2>Work Completion Report for Solar Power Plant</h2>
 <table><thead><tr><th style="width:8%">Sr. No</th><th style="width:57%">Component</th><th style="width:35%">Observation</th></tr></thead><tbody>
 @foreach([
@@ -11,12 +17,12 @@
 @foreach([
 ['7','Type of modules (Mono/Poly)','Mono Crystalline Bifacial'],['','Make of Manufacturing',$value('make_of_solar')],
 ['','Wattage per module',$value('wattage_per_module').' Wp'],['','No. of PV Modules',$value('no_of_pv_module').' Nos'],
-['','Total Capacity (KWP)',$value('total_capacity').' kWp'],['','Warrantee Details (Product + Performance)',$value('warranty')],
+['','Total Capacity (KWP)',$capacityWp.' Wp'],['','Warrantee Details (Product + Performance)',$value('warranty')],
 ] as [$number,$label,$text])<tr><td>{{ $number }}</td><td>{{ $label }}</td><td>{{ $text }}</td></tr>@endforeach
 <tr><th colspan="3">PCU</th></tr>
 @foreach([
 ['8','Make & Model number of Inverter',$value('make_of_inverter')],['','Rating',$value('capacity_inverter').' kW'],
-['','Type of charge controller/MPPT','0.3 kW'],['','Capacity of Inverter',$value('capacity_inverter').' kW'],
+['','Type of charge controller/MPPT','0.1 kW'],['','Capacity of Inverter',$value('capacity_inverter').' kW'],
 ['','HPD','Inbuilt'],['','Year of manufacturing',$value('year_of_manufacturing')],
 ] as [$number,$label,$text])<tr><td>{{ $number }}</td><td>{{ $label }}</td><td>{{ $text }}</td></tr>@endforeach
 <tr><th colspan="3">Earthing and Protection</th></tr>

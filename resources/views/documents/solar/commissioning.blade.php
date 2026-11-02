@@ -14,5 +14,7 @@
 <h2>Proforma-A</h2><p class="center">COMMISSIONING REPORT (PROVISIONAL) FOR GRID CONNECTED SOLAR<br>PHOTOVOLTAIC POWER PLANT (with Net-metering facility)</p>
 <p>Certified that a Grid Connected SPV Power Plant of <b>{{ $value('capacity_solar') }} kWp</b> capacity has been installed at the site <b>{{ $value('address') }}</b>, District <b>{{ $value('city') }}</b> of <b>{{ $value('state') }}</b> which has been installed by M/S <b>SHREYANSHI ENTERPRISES</b> on <b>{{ $date }}</b> as per MNRE specifications. The system has been checked for its performance and found in order for further commissioning.</p>
 <table class="signatures"><tr><td>Signature of the beneficiary</td><td>Signature of the agency with<br>name, seal and date</td></tr></table>
+<div class="commissioning-inspection" style="page-break-before:always;page-break-inside:avoid;">
 <p>The above RTS installation has been inspected by me for Pre-Commissioning Testing of Roof Top Solar Connection at dt. {{ $date }} as per guidelines issued by the office of The Chief Engineer vide letter no. {{ $value('sanction_no') }} and found in order for commissioning.</p>
 <table class="signatures"><tr><td>Name: <b>{{ $value('consumer_name') }}</b><br>Consumer No.: <b>{{ $value('consumer_number') }}</b></td><td>Signature of the MSEDCL Officer Name,<br>Designation Date and seal</td></tr></table>
+</div>
