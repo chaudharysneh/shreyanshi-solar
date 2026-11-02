@@ -668,6 +668,9 @@
                             </div>
                         </div>
 
+                        <div class="col-12 create-step-2">
+                            @include('crm.invoices.partials.table-display-options')
+                        </div>
                         <div hidden>
                             @include('crm.invoices.partials.bom-specifications-table')
                         </div>

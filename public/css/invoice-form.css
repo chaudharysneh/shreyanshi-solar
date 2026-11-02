@@ -840,6 +840,58 @@ input:checked + .slider:before {
     color: #555;
 }
 
+.invoice-display-options .invoice-display-toggle {
+    display: inline-flex;
+    align-items: center;
+    background: #edf6f0;
+    border: 1px solid #c6dfce;
+    border-radius: 9px;
+    color: #28643d;
+    padding: 10px 15px;
+    font-size: 13px;
+    font-weight: 600;
+}
+.invoice-display-options .invoice-display-toggle:hover {
+    background: #e1efe5;
+    border-color: #327548;
+}
+.invoice-display-chevron { transition: transform .2s ease; }
+.invoice-display-toggle[aria-expanded="true"] .invoice-display-chevron { transform: rotate(180deg); }
+.invoice-display-panel {
+    padding: 22px;
+    background: #fff;
+    border: 1px solid #dbe7df;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(35, 77, 50, .04);
+}
+.invoice-display-heading { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+.invoice-display-icon {
+    display: flex; align-items: center; justify-content: center;
+    width: 40px; height: 40px; flex-shrink: 0;
+    color: #327548; background: #edf6f0; border-radius: 10px; font-size: 18px;
+}
+.invoice-display-heading .invoice-display-title { margin: 0 0 4px; font-size: 15px; font-weight: 600; color: #24372d; }
+.invoice-display-heading .invoice-display-subtitle { margin: 0; color: #748078; font-size: 12px; }
+.invoice-display-badge { margin-left: auto; padding: 5px 9px; border-radius: 6px; background: #f1f5f2; color: #607568; font-size: 11px; white-space: nowrap; }
+.invoice-display-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.invoice-display-choice {
+    display: flex; align-items: center; gap: 10px; height: 100%; margin: 0;
+    padding: 12px; border: 1px solid #e0e6e2; border-radius: 8px;
+    color: #5d6961; background: #fafcfb; font-size: 13px; cursor: pointer;
+    transition: border-color .15s ease, background .15s ease;
+}
+.invoice-display-choice:has(input:checked) { background: #f0f7f2; border-color: #bed8c6; color: #245d38; }
+.invoice-display-choice:hover { border-color: #327548; }
+.invoice-display-choice:focus-within { outline: 2px solid #327548; outline-offset: 2px; }
+.invoice-display-choice input { width: 16px; height: 16px; margin: 0; flex-shrink: 0; accent-color: #327548; cursor: pointer; }
+.invoice-display-hint { display: flex; align-items: baseline; gap: 8px; margin-top: 16px; padding-top: 14px; border-top: 1px solid #edf1ee; color: #748078; font-size: 12px; line-height: 1.5; }
+@media (max-width: 991px) { .invoice-display-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 575px) {
+    .invoice-display-panel { padding: 15px; }
+    .invoice-display-grid { grid-template-columns: 1fr; gap: 8px; }
+    .invoice-display-badge { display: none; }
+}
+
 @media print {
     .preview-header {
         display: none;

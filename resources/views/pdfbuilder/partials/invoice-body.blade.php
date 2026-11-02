@@ -39,6 +39,20 @@
     $invoicePhone = $customerDetail($invoiceCustomer->phone ?? $estdata->phone ?? '');
     $invoiceBilling = $customerDetail($invoiceCustomer->address ?? $estdata->address ?? '');
     $invoiceShipping = $customerDetail($invoiceCustomer->shipping_address ?? '') ?: $invoiceBilling;
+    $savedDisplay = $estimate->table_display ?? $estdata->table_display ?? null;
+    if (is_string($savedDisplay)) $savedDisplay = json_decode($savedDisplay, true);
+    $tableDisplay = \App\Support\InvoiceTableDisplay::resolve(is_array($savedDisplay) ? $savedDisplay : null);
+    $tableColumns = [];
+    if ($tableDisplay['serial']) $tableColumns['serial'] = ['label' => 'No.', 'weight' => 5];
+    $tableColumns['item'] = ['label' => $tableDisplay['description'] ? 'Item & Description' : 'Item', 'weight' => 32];
+    foreach (['quantity' => ['Qty', 6], 'unit' => ['Unit', 7], 'rate' => ['Rate (₹)', 13], 'taxable' => ['Taxable (₹)', 13]] as $key => [$label, $weight]) {
+        if ($tableDisplay[$key]) $tableColumns[$key] = compact('label', 'weight');
+    }
+    if ($tableDisplay['taxes']) {
+        foreach ($invoiceTaxLabels as $label) $tableColumns['tax_' . $label] = ['label' => $label, 'weight' => 8];
+    }
+    if ($tableDisplay['amount']) $tableColumns['amount'] = ['label' => 'Amount (₹)', 'weight' => 14];
+    $tableWeight = array_sum(array_column($tableColumns, 'weight'));
 @endphp
 <style>
     .reference-invoice { width:98%; margin:0 auto; color:#24372d; font-family:'DejaVu Sans',sans-serif; font-size:11px; line-height:1.4; }
@@ -86,11 +100,9 @@
     </table>
     <table class="grid items">
         <thead><tr>
-            <th style="width:4%;">No.</th><th style="width:30%;">Item &amp; Description</th>
-            <th style="width:5%;">Qty</th><th style="width:6%;">Unit</th>
-            <th>Rate (₹)</th><th>Taxable (₹)</th>
-            @foreach ($invoiceTaxLabels as $label)<th style="width:7%;">{{ $label }}</th>@endforeach
-            <th>Amount (₹)</th>
+            @foreach ($tableColumns as $column)
+                <th style="width:{{ number_format($column['weight'] / $tableWeight * 100, 4, '.', '') }}%;">{{ $column['label'] }}</th>
+            @endforeach
         </tr></thead>
         <tbody>
         @foreach ($invoiceRows as $row)
@@ -112,17 +124,19 @@
                 $rowTax = isset($row['tax_amount']) ? (float) $row['tax_amount'] : $rowTaxable * array_sum($rowRates) / 100;
             @endphp
             <tr>
-                <td>{{ $loop->iteration }}</td>
+                @if ($tableDisplay['serial'])<td>{{ $loop->iteration }}</td>@endif
                 <td><strong>{{ $row['name'] ?? 'Solar installation' }}</strong>
-                    @if (!empty($row['description']))<br>{!! nl2br(e($row['description'])) !!}@endif
-                    @if (!empty($row['hsn_sac']))<br>HSN/SAC: {{ $row['hsn_sac'] }}@endif
+                    @if ($tableDisplay['description'] && !empty($row['description']))<br>{!! nl2br(e($row['description'])) !!}@endif
+                    @if ($tableDisplay['hsn'] && !empty($row['hsn_sac']))<br>HSN/SAC: {{ $row['hsn_sac'] }}@endif
                 </td>
-                <td class="number">{{ rtrim(rtrim(number_format($rowQty, 2, '.', ''), '0'), '.') }}</td>
-                <td>{{ $row['unit'] ?? 'Nos.' }}</td>
-                <td class="number">{{ number_format($rowPrice, 2) }}</td>
-                <td class="number">{{ number_format($rowTaxable, 2) }}</td>
-                @foreach ($rowRates as $rate)<td class="number">{{ number_format($rate, 2) }}%</td>@endforeach
-                <td class="number">{{ number_format($rowTaxable + $rowTax, 2) }}</td>
+                @if ($tableDisplay['quantity'])<td class="number">{{ rtrim(rtrim(number_format($rowQty, 2, '.', ''), '0'), '.') }}</td>@endif
+                @if ($tableDisplay['unit'])<td>{{ $row['unit'] ?? 'Nos.' }}</td>@endif
+                @if ($tableDisplay['rate'])<td class="number">{{ number_format($rowPrice, 2) }}</td>@endif
+                @if ($tableDisplay['taxable'])<td class="number">{{ number_format($rowTaxable, 2) }}</td>@endif
+                @if ($tableDisplay['taxes'])
+                    @foreach ($rowRates as $rate)<td class="number">{{ number_format($rate, 2) }}%</td>@endforeach
+                @endif
+                @if ($tableDisplay['amount'])<td class="number">{{ number_format($rowTaxable + $rowTax, 2) }}</td>@endif
             </tr>
         @endforeach
         </tbody>

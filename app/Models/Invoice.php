@@ -28,6 +28,7 @@ class Invoice extends Model
         'reference_no',
         'terms_conditions',
         'bom_specifications',
+        'table_display',
         'price_mode',
         'type',
         'attach_file',
@@ -59,6 +60,7 @@ class Invoice extends Model
     protected $casts = [
         'invoice_date' => 'date',
         'bom_specifications' => 'array',
+        'table_display' => 'array',
         'due_date' => 'date',
         'is_quotation' => 'boolean',
         'quantity' => 'decimal:2',

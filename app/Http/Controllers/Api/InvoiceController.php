@@ -142,6 +142,8 @@ class InvoiceController extends ApiBaseController
             'terms_conditions' => 'nullable|string|max:10000',
             'comment' => 'nullable|string',
             'bom_specifications' => 'nullable|array',
+            'table_display' => 'nullable|array:serial,description,hsn,quantity,unit,rate,taxable,taxes,amount',
+            'table_display.*' => 'boolean',
             'bom_specifications.*' => 'array:make,technical',
             'bom_specifications.*.make' => 'nullable|string|max:2000',
             'bom_specifications.*.technical' => 'nullable|string|max:10000',
@@ -269,6 +271,7 @@ class InvoiceController extends ApiBaseController
                 'reference_no' => $request->input('reference_no'),
                 'terms_conditions' => $request->input('terms_conditions'),
                 'bom_specifications' => $request->input('bom_specifications'),
+                'table_display' => $request->input('table_display'),
                 'invoice_date' => $invoiceDate,
                 'invoice_name' => $invoiceName,
                 'type' => $type,
@@ -355,6 +358,8 @@ class InvoiceController extends ApiBaseController
             'terms_conditions' => 'nullable|string|max:10000',
             'comment' => 'nullable|string',
             'bom_specifications' => 'nullable|array',
+            'table_display' => 'nullable|array:serial,description,hsn,quantity,unit,rate,taxable,taxes,amount',
+            'table_display.*' => 'boolean',
             'bom_specifications.*' => 'array:make,technical',
             'bom_specifications.*.make' => 'nullable|string|max:2000',
             'bom_specifications.*.technical' => 'nullable|string|max:10000',
@@ -497,7 +502,7 @@ class InvoiceController extends ApiBaseController
                 'updated_by' => auth()->id(),
             ];
 
-            foreach (['reference_no', 'terms_conditions', 'bom_specifications'] as $field) {
+            foreach (['reference_no', 'terms_conditions', 'bom_specifications', 'table_display'] as $field) {
                 if ($request->exists($field)) {
                     $updateData[$field] = $request->input($field);
                 }

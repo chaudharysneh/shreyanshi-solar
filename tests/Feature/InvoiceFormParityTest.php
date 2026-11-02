@@ -41,6 +41,7 @@ class InvoiceFormParityTest extends TestCase
         Schema::create('payments', fn (Blueprint $t) => [$t->id(), $t->integer('invoice_id'), $t->timestamp('voided_at')->nullable()]);
         (require database_path('migrations/2026_04_14_134000_recreate_invoices_table.php'))->up();
         (require database_path('migrations/2026_10_30_000001_add_estimate_form_fields_to_invoices.php'))->up();
+        (require database_path('migrations/2026_11_02_000001_add_table_display_to_invoices.php'))->up();
         foreach (['customers', 'users', 'pdf_builder_forms', 'currencies'] as $table) DB::table($table)->insert(['id' => 1, 'name' => 'Test']);
         DB::table('taxes')->insert(['name' => 'CGST + SGST', 'rate' => 18, 'is_active' => true]);
         $actor = new class extends User {
@@ -113,6 +114,59 @@ class InvoiceFormParityTest extends TestCase
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadHTML('<html><meta charset="UTF-8"><body>'.$html.'</body></html>')->setPaper('a4');
         $this->assertStringStartsWith('%PDF-', $pdf->output());
         $this->assertSame(1, $pdf->getDomPDF()->getCanvas()->get_page_count());
+    }
+
+    public function test_table_display_choices_persist_and_reflow_without_changing_totals(): void
+    {
+        $choices = array_fill_keys(array_keys(\App\Support\InvoiceTableDisplay::OPTIONS), false);
+        $invoice = $this->store(['table_display' => $choices]);
+        $this->assertSame($choices, $invoice->table_display);
+        $render = function () use ($invoice) {
+            $invoice->refresh();
+            $summary = \App\Support\DocumentSummaryPresenter::fromRecord($invoice, $invoice->customer, []);
+            return view('pdfbuilder.partials.invoice-body', array_merge($summary, [
+                'estimate' => $invoice, 'companySettings' => [], 'summaryHasBank' => false,
+                'summaryHasQr' => false, 'summaryHasComment' => false,
+            ]))->render();
+        };
+        $html = $render();
+        $dom = new \DOMDocument();
+        @$dom->loadHTML($html);
+        $xpath = new \DOMXPath($dom);
+        $tablePath = '//table[contains(@class,"items")]';
+        $this->assertSame(1, $xpath->query($tablePath . '//thead/tr/th')->length);
+        $this->assertSame(1, $xpath->query($tablePath . '//tbody/tr/td')->length);
+        $this->assertStringContainsString('width:100.0000%', $html);
+        $this->assertStringNotContainsString('HSN/SAC:', $html);
+        $this->assertStringNotContainsString('Custom panel description', $html);
+        $this->assertStringNotContainsString('9.00%', $html);
+        $this->assertStringContainsString('Panel', $html);
+        $this->assertStringContainsString('256.00', $html);
+        $amount = $invoice->amount;
+
+        // Existing clients that omit display settings must preserve the saved choices.
+        $response = Invoice::withoutEvents(fn () => app(InvoiceController::class)->update(new Request($this->payload()), $invoice));
+        $this->assertSame(200, $response->status());
+        $this->assertSame($choices, $invoice->fresh()->table_display);
+        $choices['hsn'] = $choices['taxes'] = true;
+        $response = Invoice::withoutEvents(fn () => app(InvoiceController::class)->update(new Request($this->payload(['table_display' => $choices])), $invoice));
+        $this->assertSame(200, $response->status());
+        $this->assertSame($choices, $invoice->fresh()->table_display);
+        $this->assertSame($amount, $invoice->fresh()->amount);
+        $html = $render();
+        $this->assertStringContainsString('HSN/SAC: 008541', $html);
+        $this->assertStringContainsString('9.00%', $html);
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadHTML($html)->setPaper('a4');
+        $this->assertStringStartsWith('%PDF-', $pdf->output());
+    }
+
+    public function test_invalid_table_display_options_are_rejected(): void
+    {
+        foreach ([['hsn' => 'invalid'], ['unknown' => true]] as $choices) {
+            $response = app(InvoiceController::class)->store(new Request($this->payload(['table_display' => $choices])));
+            $this->assertSame(422, $response->status());
+        }
+        $this->assertSame(0, Invoice::count());
     }
 
     public function test_price_suggestions_are_calculated_by_capacity_and_do_not_save_an_invoice(): void
@@ -219,7 +273,12 @@ class InvoiceFormParityTest extends TestCase
             'gstRate' => 18, 'estimatePriceMode' => 'bom', 'defaultCurrencyId' => 1, 'invoice' => $invoice];
         foreach (['create', 'edit'] as $mode) {
             $html = view('crm.invoices.'.$mode, $data)->render();
-            foreach (['Pricing Method', 'Reference#', 'Invoice Format', 'data-price-suggestions-url=', 'HSN/SAC Code', 'Terms &amp; Conditions',
+            $dom = new \DOMDocument();
+            @$dom->loadHTML($html);
+            $xpath = new \DOMXPath($dom);
+            $this->assertSame(1, $xpath->query('//*[@id="invoiceTableDisplay"]')->length);
+            $this->assertSame(0, $xpath->query('//*[@id="invoiceTableDisplay"]/ancestor::*[@hidden]')->length);
+            foreach (['Pricing Method', 'Reference#', 'Invoice Format', 'Table display options', 'name="table_display[hsn]"', 'data-price-suggestions-url=', 'HSN/SAC Code', 'Terms &amp; Conditions',
                 'invoiceEditBomModal', 'invoiceQuickAddBomModal', 'invoice-form.js', 'name="invoice_name"',
                 'name="invoice_date"', 'name="bom_specifications[7][technical]"'] as $section) {
                 $this->assertTrue(str_contains($html, $section), $mode . ' form is missing: ' . $section);
