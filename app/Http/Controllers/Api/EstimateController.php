@@ -122,10 +122,10 @@ class EstimateController extends Controller
             'bom_specifications.*' => 'array:make,technical',
             'bom_specifications.*.make' => 'nullable|string|max:2000',
             'bom_specifications.*.technical' => 'nullable|string|max:10000',
-            'type' => 'required|in:residential,commercial,industrial,common meter,ground mounted,ux template',
+            'type' => 'required|in:residential,commercial,industrial,common meter,ground mounted,ux template,bank quote',
             'quantity' => 'required|numeric|gt:0',
             'price' => $useBomPrice ? 'required|numeric|min:0' : 'required|numeric|gt:0',
-            'template_id' => 'required|exists:pdf_builder_forms,id',
+            'template_id' => $request->input('type') === 'bank quote' ? 'nullable' : 'required|exists:pdf_builder_forms,id',
             'solar_meter_charges' => 'required|in:as_per_actual,as_per_client_scope,included',
             'estimate_date' => 'nullable|date',
             'products' => 'nullable|json',
@@ -156,7 +156,7 @@ class EstimateController extends Controller
             $type = $request->input('type');
             $quantity = (float) $request->input('quantity', 0);
             $price = $useBomPrice ? 0 : (float) $request->input('price', 0);
-            $templateId = (int) $request->input('template_id', 0);
+            $templateId = $request->input('type') === 'bank quote' ? null : (int) $request->input('template_id', 0);
             $solarMeterCharges = $request->input('solar_meter_charges', '');
             $solarStructureCharges = (float) ($request->input('solar_structure_charges') ?? 0);
             $estimateDate = $request->input('estimate_date', now()->format('Y-m-d'));
@@ -270,7 +270,7 @@ class EstimateController extends Controller
             ]);
 
             // ── Email: Estimate Customer & Admin Notifications ────────────────
-            if ($request->boolean('update_template_comment')) {
+            if ($templateId && $request->boolean('update_template_comment')) {
                 $this->updateTemplateEstimateComment($templateId, $comment);
             }
 
@@ -344,10 +344,10 @@ class EstimateController extends Controller
             'bom_specifications.*' => 'array:make,technical',
             'bom_specifications.*.make' => 'nullable|string|max:2000',
             'bom_specifications.*.technical' => 'nullable|string|max:10000',
-            'type' => 'required|in:residential,commercial,industrial,common meter,ground mounted,ux template',
+            'type' => 'required|in:residential,commercial,industrial,common meter,ground mounted,ux template,bank quote',
             'quantity' => 'required|numeric|gt:0',
             'price' => $useBomPrice ? 'required|numeric|min:0' : 'required|numeric|gt:0',
-            'template_id' => 'required|exists:pdf_builder_forms,id',
+            'template_id' => $request->input('type') === 'bank quote' ? 'nullable' : 'required|exists:pdf_builder_forms,id',
             'solar_meter_charges' => 'required|in:as_per_actual,as_per_client_scope,included',
             'estimate_date' => 'nullable|date',
             'products' => 'nullable|json',
@@ -377,7 +377,7 @@ class EstimateController extends Controller
             $type = $request->input('type');
             $quantity = (float) $request->input('quantity', 0);
             $price = $useBomPrice ? 0 : (float) $request->input('price', 0);
-            $templateId = (int) $request->input('template_id', 0);
+            $templateId = $request->input('type') === 'bank quote' ? null : (int) $request->input('template_id', 0);
             $solarMeterCharges = $request->input('solar_meter_charges', '');
             $solarStructureCharges = (float) ($request->input('solar_structure_charges') ?? 0);
             $estimateDate = $request->input('estimate_date', now()->format('Y-m-d'));
@@ -493,7 +493,7 @@ class EstimateController extends Controller
             $updateData['currency'] = $estimate->currency ?: \App\Support\DocumentCurrency::defaultCode();
             $estimate->update($updateData);
 
-            if ($request->boolean('update_template_comment')) {
+            if ($templateId && $request->boolean('update_template_comment')) {
                 $this->updateTemplateEstimateComment($templateId, $comment);
             }
 

@@ -100,7 +100,7 @@
                                 <th class="text-center">Sr.No</th>
                                 <th class="text-start">Customer Name</th>
                                 <th class="text-start">Invoice Name</th>
-                                <th class="text-center d-none d-md-table-cell">Invoice No</th>
+                                <th class="text-start d-none d-md-table-cell">Inv. No. / Type</th>
                                 <th class="text-center d-none d-md-table-cell">Invoice Date</th>
                                 <th class="text-center d-none d-md-table-cell">Due Date</th>
                                 <th class="text-center d-none d-md-table-cell">Status</th>

@@ -194,12 +194,17 @@ class EstimateController extends Controller
         if (!$template) {
             $template = PdfBuilderForm::first();
         }
+        if (!$template && $estimate->type === 'bank quote') {
+            $template = new PdfBuilderForm();
+        }
 
         if ($template) {
             $form_data = $template->form_data ?? [];
 
             // Prepare data for the new template wrapper
             $pdfData = [
+                'bankQuoteOnly' => $estimate->type === 'bank quote',
+                'invoiceOnly' => $estimate->type === 'bank quote',
                 'estimate' => $estimate,
                 'estimate_no' => $estimate->estimate_no,
                 'companySettings' => $settings,
@@ -229,7 +234,9 @@ class EstimateController extends Controller
             ];
 
             $templateName = Str::lower(trim((string) $template->template_name));
-            if ($templateName === 'basic template') {
+            if ($estimate->type === 'bank quote') {
+                $pdfView = 'pdfbuilder.pdf';
+            } elseif ($templateName === 'basic template') {
                 $pdfView = 'pdfbuilder.basic-template-pdf';
             } elseif (in_array($templateName, ['solar proposal', 'ux template']) || Str::lower(trim((string) $estimate->type)) === 'ux template') {
                 $pdfView = 'pdfbuilder.qt-000150-pdf';

@@ -1736,6 +1736,11 @@
             tableBody.innerHTML = items.map(function (estimate, index) {
                 const srNo = meta && meta.from ? meta.from + index : index + 1;
                 const customerName = escapeHtml(estimate.customer?.name || '-');
+                const customerPhone = String(estimate.customer?.phone || '').trim();
+                const phoneHref = customerPhone.replace(/[^+\d]/g, '');
+                const customerPhoneHtml = customerPhone
+                    ? `<a class="small text-primary text-decoration-none text-nowrap" href="tel:${escapeHtml(phoneHref)}">${escapeHtml(customerPhone)}</a>` : '';
+                const estimateType = escapeHtml(String(estimate.type || '').replace(/\b\w/g, letter => letter.toUpperCase()));
                 const estimateNo = escapeHtml(estimate.estimate_no || '-');
                 const estimateDate = escapeHtml(formatDate(estimate.estimate_date));
                 const statusValue = String(estimate.status || '').toLowerCase();
@@ -1763,10 +1768,15 @@
                     <tr>
                         <td class="ps-4" data-label="Sr.No">${srNo}</td>
                         <td data-label="Customer Name">
-                            <div class="fw-bold small text-dark">${customerName}</div>
+                            <div class="d-flex flex-column align-items-start gap-1 text-start">
+                                <span class="fw-bold small text-dark">${customerName}</span>${customerPhoneHtml}
+                            </div>
                         </td>
                         <td data-label="Estimate Name">${escapeHtml(estimate.estimate_name || '-')}${isApproved ? `<div class="small mt-1">Equipment: <span class="badge equipment-progress" data-progress="${escapeHtml(estimate.equipment_progress || 'Pending')}">${escapeHtml(estimate.equipment_progress || 'Pending')}</span></div>` : ''}</td>
-                        <td class="d-none d-md-table-cell" data-label="Estimate No">${estimateNo}</td>
+                        <td class="d-none d-md-table-cell text-start" data-label="Est. No. / Type">
+                            <div>${estimateNo}</div>
+                            ${estimateType ? `<span class="badge mt-1 rounded-pill" style="background:#eaf3ec;color:#28643d;font-size:11px;font-weight:500;">${estimateType}</span>` : ''}
+                        </td>
                         <td class="d-none d-md-table-cell" data-label="Estimate Date">${estimateDate}</td>
                         <td class="d-none d-md-table-cell" data-label="Status">${statusBadge}</td>
                         <td class="text-end pe-4 d-none d-md-table-cell" data-label="Actions">${actionsHtml}</td>

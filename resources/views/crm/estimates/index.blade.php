@@ -302,7 +302,7 @@
                             <th class="ps-4">Sr.No</th>
                             <th>Customer Name</th>
                             <th>Estimate Name</th>
-                            <th class="d-none d-md-table-cell">Estimate No</th>
+                            <th class="d-none d-md-table-cell">Est. No. / Type</th>
                             <th class="d-none d-md-table-cell">Estimate Date</th>
                             <th class="d-none d-md-table-cell">Status</th>
                             <th class="text-end pe-4 d-none d-md-table-cell" style="width: 150px;">Actions</th>
@@ -401,6 +401,7 @@
                                         <option value="" selected>Select Type</option>
                                         <option value="residential">Residential</option>
                                         <option value="commercial">Commercial</option>
+                                        <option value="bank quote">Bank Quote</option>
                                         <option value="industrial">Industrial</option>
                                         <option value="common meter">Common Meter</option>
                                         <option value="ground mounted">Ground Mounted</option>

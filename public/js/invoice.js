@@ -157,8 +157,9 @@
                         ${phone ? `<div class="small"><a href="tel:${escapeHtml(phoneHref)}">${escapeHtml(phone)}</a></div>` : ''}
                     </td>
                     <td class="text-start" data-label="Invoice Name">${escapeHtml(invoice.invoice_name || '-')}${invoice.estimate ? `<div class="small mt-1">Equipment: <span class="badge equipment-progress" data-progress="${escapeHtml(invoice.estimate.equipment_progress || 'Pending')}">${escapeHtml(invoice.estimate.equipment_progress || 'Pending')}</span></div>` : ''}</td>
-                    <td class="text-center d-none d-md-table-cell" data-label="Invoice No">
-                        <span class="badge bg-soft-info text-info rounded-pill px-3">#${invoice.invoice_no ?? '-'}</span>
+                    <td class="text-start d-none d-md-table-cell" data-label="Inv. No. / Type">
+                        <div>#${escapeHtml(invoice.invoice_no ?? '-')}</div>
+                        ${invoice.type ? `<span class="badge mt-1 rounded-pill" style="background:#eaf3ec;color:#28643d;font-size:11px;font-weight:500;">${escapeHtml(String(invoice.type).replace(/\b\w/g, letter => letter.toUpperCase()))}</span>` : ''}
                     </td>
                     <td class="text-center d-none d-md-table-cell" data-label="Invoice Date">${formatDate(invDate)}</td>
                     <td class="text-center d-none d-md-table-cell" data-label="Due Date">${formatDate(dueDate)}</td>

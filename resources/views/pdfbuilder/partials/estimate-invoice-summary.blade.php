@@ -262,8 +262,8 @@ $summaryQrWidth = $summaryHasQr ? 100 * 25 / $summaryFooterWeight : 0;
     @include('pdfbuilder.partials.invoice-body')
 @else
 @include('pdfbuilder.partials.invoice-customer-header', [
-    'documentTitle' => !empty($invoiceOnly) ? 'INVOICE' : 'ESTIMATION',
-    'documentNumberLabel' => !empty($invoiceOnly) ? 'Invoice No.' : 'Estimate No.',
+    'documentTitle' => !empty($bankQuoteOnly) ? 'BANK QUOTATION' : (!empty($invoiceOnly) ? 'INVOICE' : 'ESTIMATION'),
+    'documentNumberLabel' => !empty($bankQuoteOnly) ? 'Quotation No.' : (!empty($invoiceOnly) ? 'Invoice No.' : 'Estimate No.'),
     'showCustomerEmail' => empty($invoiceOnly),
 ])
 

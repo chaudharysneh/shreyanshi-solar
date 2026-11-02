@@ -460,6 +460,7 @@
                             <select name="type" id="type" class="form-select @error('type') is-invalid @enderror"
                                 required>
                                 <option value="">Select Type</option>
+                                <option value="bank quote" @selected(old('type', request('type')) == 'bank quote')>Bank Quote</option>
                                 <option value="residential" @selected(old('type') == 'residential')>Residential</option>
                                 <option value="commercial" @selected(old('type') == 'commercial')>Commercial</option>
                                 <option value="industrial" @selected(old('type') == 'industrial')>Industrial</option>
@@ -511,6 +512,7 @@
                             <select name="template_id" id="template_id"
                                 class="form-select @error('template_id') is-invalid @enderror" required>
                                 <option value="">Select Template</option>
+                                <option value="bank_quote" data-bank-quote-template hidden disabled>Bank Quote</option>
                                 @if (isset($templates))
                                     @foreach ($templates as $template)
                                         <option value="{{ $template->id }}" @selected(old('template_id') == $template->id)>
@@ -1103,3 +1105,5 @@
         });
     </script>
 @endpush
+
+@include('crm.estimates.partials.bank-quote-template-script')

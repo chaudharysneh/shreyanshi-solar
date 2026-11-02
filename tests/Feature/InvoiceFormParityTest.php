@@ -177,6 +177,33 @@ class InvoiceFormParityTest extends TestCase
         $this->assertSame(0, Invoice::count());
     }
 
+    public function test_bank_quote_pdf_contains_only_the_quotation_summary(): void
+    {
+        $invoice = $this->store();
+        $quote = new \App\Models\Estimate();
+        $quote->setRawAttributes($invoice->getAttributes());
+        $quote->type = 'bank quote';
+        $quote->estimate_no = 'BQ-001';
+        $quote->estimate_date = '2026-11-02';
+        $quote->setRelation('customer', $invoice->customer);
+        $pixel = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=';
+        foreach (['bom', 'base'] as $mode) {
+            $quote->price_mode = $mode;
+            $html = view('pdfbuilder.pdf', [
+                'estimate' => $quote, 'estimate_no' => 'BQ-001', 'invoiceOnly' => true, 'bankQuoteOnly' => true,
+                'companySettings' => ['company_name' => 'Test Solar'], 'companyLogoPath' => $pixel,
+                'header_image' => $pixel, 'profileUser' => auth()->user(),
+            ])->render();
+            $this->assertStringContainsString('BANK QUOTATION', $html);
+            $this->assertStringContainsString('Quotation No.', $html);
+            $this->assertStringContainsString('Billing Address', $html);
+            $this->assertStringNotContainsString('alt="Header Image"', $html);
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadHTML($html)->setPaper('a4');
+            $this->assertStringStartsWith('%PDF-', $pdf->output());
+            $this->assertSame(1, $pdf->getDomPDF()->getCanvas()->get_page_count());
+        }
+    }
+
     public function test_price_suggestions_are_calculated_by_capacity_and_do_not_save_an_invoice(): void
     {
         foreach ([10 => [300000, 400000, 450000], 3 => [90000, 120000, 135000]] as $kw => $expected) {

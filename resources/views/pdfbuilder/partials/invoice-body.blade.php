@@ -1,6 +1,6 @@
 @php
     $invoiceRows = $summaryUsesGlobalTax ? [[
-        'name' => $estdata->invoice_name ?? 'Solar installation', 'quantity' => 1,
+        'name' => $estdata->invoice_name ?? $estdata->estimate_name ?? 'Solar installation', 'quantity' => 1,
         'unit' => 'Job', 'price' => $summaryBaseCost, 'tax_rate' => (float) ($estdata->gst ?? 0),
         'tax_label' => 'CGST + SGST',
     ]] : ($estdata->product_name ?? []);
@@ -68,7 +68,10 @@
     .reference-invoice .items thead { display:table-header-group; }
     .reference-invoice .closing { page-break-inside:avoid; margin-top:7px; }
 </style>
-@include('pdfbuilder.partials.invoice-customer-header')
+@include('pdfbuilder.partials.invoice-customer-header', [
+    'documentTitle' => !empty($bankQuoteOnly) ? 'BANK QUOTATION' : 'INVOICE',
+    'documentNumberLabel' => !empty($bankQuoteOnly) ? 'Quotation No.' : 'Invoice No.',
+])
 <div class="reference-invoice">
     <table class="grid items">
         <thead><tr>
@@ -147,7 +150,7 @@
                 <td colspan="2" style="vertical-align:bottom;height:70px;">
                     <strong class="payable">Total Payable (₹): {{ number_format($summaryNetPayable, 2) }}</strong><br>
                     @if ($summarySubsidy > 0)Subsidy amount to be credited to the client's account.<br>@endif
-                    This is a computer-generated invoice. E. &amp; O. E.
+                    This is a computer-generated {{ !empty($bankQuoteOnly) ? 'quotation' : 'invoice' }}. E. &amp; O. E.
                 </td>
                 <td class="signature" style="text-align:center;">For, {{ $summaryCompanyName }}<br><br><br><br><strong>Authorised Signatory</strong></td>
             </tr>
