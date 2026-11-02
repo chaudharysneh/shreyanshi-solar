@@ -97,6 +97,24 @@ class InvoiceFormParityTest extends TestCase
         }
     }
 
+    public function test_reference_invoice_body_renders_saved_items_and_totals_as_a_pdf(): void
+    {
+        $invoice = $this->store();
+        $summary = \App\Support\DocumentSummaryPresenter::fromRecord($invoice, $invoice->customer, ['company_name' => 'Test Solar', 'bank_name' => 'Test Bank']);
+        $html = view('pdfbuilder.partials.invoice-body', array_merge($summary, [
+            'estimate' => $invoice, 'companySettings' => [], 'summaryHasBank' => true,
+            'summaryHasQr' => false, 'summaryHasComment' => false,
+        ]))->render();
+        foreach (['Billing Address', 'Shipping Address', 'Item &amp; Description', 'Bank Details',
+            'Total Invoice Amount in Words', 'Authorised Signatory', '008541', '236.00', '256.00',
+            'Invoice-specific terms', 'Rupees Two Hundred Fifty Six Only'] as $text) {
+            $this->assertStringContainsString($text, $html);
+        }
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadHTML('<html><meta charset="UTF-8"><body>'.$html.'</body></html>')->setPaper('a4');
+        $this->assertStringStartsWith('%PDF-', $pdf->output());
+        $this->assertSame(1, $pdf->getDomPDF()->getCanvas()->get_page_count());
+    }
+
     public function test_price_suggestions_are_calculated_by_capacity_and_do_not_save_an_invoice(): void
     {
         foreach ([10 => [300000, 400000, 450000], 3 => [90000, 120000, 135000]] as $kw => $expected) {

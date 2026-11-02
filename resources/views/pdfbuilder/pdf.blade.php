@@ -3195,6 +3195,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
             @endif
             @include('pdfbuilder.partials.estimate-invoice-summary')
         </div>
+        @if (empty($invoiceOnly))
         <table width="100%" cellpadding="0" cellspacing="0"
             style="position:fixed; bottom:{{ !empty($invoiceOnly) ? '0' : '10px' }}; left:0; right:0;
                     background:#fff; color:#4b9349; height:40px; border-top: 1px solid #4b9349;">
@@ -3213,6 +3214,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
                 </td>
             </tr>
         </table>
+        @endif
     </div>
 
     <?php if ($__componentsActive && isset($componentsPages)): ?>
@@ -3860,7 +3862,9 @@ if (isset($after_blocks) && is_array($after_blocks)) {
     <?php endif; ?>
 
     @endif
-    @include('crm.estimates.partials.terms-conditions-pdf')
+    @if (empty($invoiceOnly))
+        @include('crm.estimates.partials.terms-conditions-pdf')
+    @endif
 </body>
 
 </html>

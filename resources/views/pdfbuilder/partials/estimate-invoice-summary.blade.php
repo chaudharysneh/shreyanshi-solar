@@ -226,7 +226,7 @@ $summaryBankWidth = $summaryHasBank ? 100 * 40 / $summaryFooterWeight : 0;
 $summaryQrWidth = $summaryHasQr ? 100 * 25 / $summaryFooterWeight : 0;
 ?>
 
-<table width="98%" align="center" cellpadding="0" cellspacing="0" style="margin-top:0;margin-bottom:8px;border-collapse:collapse;">
+<table width="98%" align="center" cellpadding="0" cellspacing="0" style="margin-top:0;margin-bottom:<?= !empty($invoiceOnly) ? '0' : '8px' ?>;border-collapse:collapse;">
     <tr>
         <td width="45%" valign="top" align="left" style="<?= $summaryHeaderTextStyle ?>padding-bottom:8px;">
             <?php if (!empty($logoBase64)): ?>
@@ -246,10 +246,13 @@ $summaryQrWidth = $summaryHasQr ? 100 * 25 / $summaryFooterWeight : 0;
         </td>
     </tr>
     <tr>
-        <td colspan="2" style="border-top:1px solid #e5e5e5;padding-top:10px;"></td>
+        <td colspan="2" style="border-top:1px solid #e5e5e5;padding-top:<?= !empty($invoiceOnly) ? '0' : '10px' ?>;font-size:0;line-height:0;"></td>
     </tr>
 </table>
 
+@if (!empty($invoiceOnly))
+    @include('pdfbuilder.partials.invoice-body')
+@else
 <table width="98%" align="center" cellpadding="0" cellspacing="0" style="margin-bottom:8px;border-collapse:collapse;">
     <tr>
         <td width="33%" align="left" style="<?= $summaryEstimationHeaderTextStyle ?>font-weight:bold;"><?= !empty($isInvoice) ? 'Invoice' : 'Estimate' ?> no.: #<?= esc($summaryEstimateNo) ?></td>
@@ -438,3 +441,4 @@ $summaryQrWidth = $summaryHasQr ? 100 * 25 / $summaryFooterWeight : 0;
 </table>
 <?php endif; ?>
 </div>
+@endif
