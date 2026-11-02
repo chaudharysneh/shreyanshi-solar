@@ -62,18 +62,14 @@ $summaryRightCellStyle = $summaryCellStyle . 'text-align:right;';
 $summaryHighlightCellStyle = $summaryRightCellStyle . 'background-color:#4b9349;color:#fff;font-weight:bold;';
 $summaryHeaderTextStyle = "font-size:13.5px;font-family:'Montserrat',sans-serif;color:#000;line-height:1.45;";
 $summaryEstimationHeaderTextStyle = "font-size:16px;font-family:'Montserrat',sans-serif;color:#000;line-height:1.45;";
-// Keep the original summary layout while matching the invoice's current palette.
-if (!empty($invoiceOnly)) {
+// Share the same palette across invoice and quotation summaries.
     $summaryCellStyle = str_replace(['#333', '#000'], ['#cbdcd0', '#24372d'], $summaryCellStyle);
     $summaryHeaderCellStyle = str_replace(['#4b9349', '#fff', '#333'], ['#eaf3ec', '#245d38', '#cbdcd0'], $summaryHeaderCellStyle);
     $summaryFooterHeaderCellStyle = str_replace(['#4b9349', '#fff', '#333'], ['#eaf3ec', '#245d38', '#cbdcd0'], $summaryFooterHeaderCellStyle);
     $summaryFooterCellStyle = str_replace(['#333', '#000'], ['#cbdcd0', '#24372d'], $summaryFooterCellStyle) . 'background-color:#f5f9f6;';
     $summaryRightCellStyle = $summaryCellStyle . 'text-align:right;';
     $summaryHighlightCellStyle = $summaryRightCellStyle . 'background-color:#327548;color:#fff;font-weight:bold;';
-}
-$summaryPricingHeaderStyle = !empty($invoiceOnly)
-    ? $summaryHeaderCellStyle . 'background-color:#327548;color:#fff;border-color:#327548;'
-    : $summaryHeaderCellStyle;
+$summaryPricingHeaderStyle = $summaryHeaderCellStyle . 'background-color:#327548;color:#fff;border-color:#327548;';
 $summaryEstimateNo = $estdata->estimate_no ?? ($estimate_no ?? '--');
 $summaryDate = ($estdata && !empty($estdata->estimate_date)) ? date('Y-m-d', strtotime($estdata->estimate_date)) : date('Y-m-d');
 $summaryCompanyName = $companySettings['company_name'] ?? $globalCompanyName ?? '--';
@@ -238,7 +234,7 @@ $summaryBankWidth = $summaryHasBank ? 100 * 40 / $summaryFooterWeight : 0;
 $summaryQrWidth = $summaryHasQr ? 100 * 25 / $summaryFooterWeight : 0;
 ?>
 
-<table width="98%" align="center" cellpadding="0" cellspacing="0" style="margin-top:0;margin-bottom:<?= !empty($invoiceOnly) ? '0' : '8px' ?>;border-collapse:collapse;">
+<table width="98%" align="center" cellpadding="0" cellspacing="0" style="margin-top:0;margin-bottom:0;border-collapse:collapse;">
     <tr>
         <td width="45%" valign="top" align="left" style="<?= $summaryHeaderTextStyle ?>padding-bottom:8px;">
             <?php if (!empty($logoBase64)): ?>
@@ -258,43 +254,18 @@ $summaryQrWidth = $summaryHasQr ? 100 * 25 / $summaryFooterWeight : 0;
         </td>
     </tr>
     <tr>
-        <td colspan="2" style="border-top:1px solid #e5e5e5;padding-top:<?= !empty($invoiceOnly) ? '0' : '10px' ?>;font-size:0;line-height:0;"></td>
+        <td colspan="2" style="border-top:1px solid #e5e5e5;padding-top:0;font-size:0;line-height:0;"></td>
     </tr>
 </table>
 
 @if (!empty($invoiceOnly) && !$summaryUsesGlobalTax)
     @include('pdfbuilder.partials.invoice-body')
 @else
-@if (!empty($invoiceOnly))
-    @include('pdfbuilder.partials.invoice-customer-header')
-@else
-<table width="98%" align="center" cellpadding="0" cellspacing="0" style="margin-bottom:8px;border-collapse:collapse;">
-    <tr>
-        <td width="33%" align="left" style="<?= $summaryEstimationHeaderTextStyle ?>font-weight:bold;"><?= !empty($isInvoice) ? 'Invoice' : 'Estimate' ?> no.: #<?= esc($summaryEstimateNo) ?></td>
-        <td width="34%" align="center" style="<?= $summaryEstimationHeaderTextStyle ?>font-weight:bold;text-decoration:underline;"><?= !empty($isInvoice) ? 'INVOICE' : 'ESTIMATION' ?></td>
-        <td width="33%" align="right" style="<?= $summaryEstimationHeaderTextStyle ?>font-weight:bold;">Date: <?= esc($summaryDate) ?></td>
-    </tr>
-</table>
-
-<table width="98%" align="center" cellpadding="0" cellspacing="0" style="margin-top:6px;border-collapse:collapse;">
-    <tr>
-        <td colspan="4" style="<?= $summaryHeaderCellStyle ?>">Customer Details</td>
-    </tr>
-    <tr>
-        <td style="<?= $summaryCellStyle ?>"><strong>Customer Name</strong></td>
-        <td style="<?= $summaryCellStyle ?>"><?= esc($estdata->name ?? '--') ?></td>
-        <td style="<?= $summaryCellStyle ?>"><strong>Email</strong></td>
-        <td style="<?= $summaryCellStyle ?>"><?= esc($estdata->email ?? '--') ?></td>
-    </tr>
-    <tr>
-        <td style="<?= $summaryCellStyle ?>"><strong>Address</strong></td>
-        <td style="<?= $summaryCellStyle ?>"><?= esc($estdata->address ?? '--') ?></td>
-        <td style="<?= $summaryCellStyle ?>"><strong>Contact</strong></td>
-        <td style="<?= $summaryCellStyle ?>"><?= esc($estdata->phone ?? '--') ?></td>
-    </tr>
-</table>
-
-@endif
+@include('pdfbuilder.partials.invoice-customer-header', [
+    'documentTitle' => !empty($invoiceOnly) ? 'INVOICE' : 'ESTIMATION',
+    'documentNumberLabel' => !empty($invoiceOnly) ? 'Invoice No.' : 'Estimate No.',
+    'showCustomerEmail' => empty($invoiceOnly),
+])
 
 <table width="98%" align="center" cellpadding="0" cellspacing="0" style="margin-top:6px;border-collapse:collapse;">
     <tr>
@@ -423,7 +394,7 @@ $summaryQrWidth = $summaryHasQr ? 100 * 25 / $summaryFooterWeight : 0;
             <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;background-color:#f6fbf6;border:1px solid #cfe5cf;font-family:'DejaVu Sans',sans-serif;">
                 <?php if ($summaryBankName !== ''): ?>
                 <tr>
-                    <td colspan="2" style="background-color:<?= !empty($invoiceOnly) ? '#327548' : '#4b9349' ?>;color:#fff;padding:4px 6px;font-size:13px;font-family:'DejaVu Sans',sans-serif;font-weight:bold;letter-spacing:0.3px;">
+                    <td colspan="2" style="background-color:#327548;color:#fff;padding:4px 6px;font-size:13px;font-family:'DejaVu Sans',sans-serif;font-weight:bold;letter-spacing:0.3px;">
                         <?= esc($summaryBankName) ?>
                     </td>
                 </tr>
