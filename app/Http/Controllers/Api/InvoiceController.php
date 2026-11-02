@@ -140,6 +140,7 @@ class InvoiceController extends ApiBaseController
             'price_mode' => 'nullable|in:base,bom',
             'reference_no' => 'nullable|string|max:255',
             'terms_conditions' => 'nullable|string|max:10000',
+            'comment' => 'nullable|string',
             'bom_specifications' => 'nullable|array',
             'bom_specifications.*' => 'array:make,technical',
             'bom_specifications.*.make' => 'nullable|string|max:2000',
@@ -184,7 +185,7 @@ class InvoiceController extends ApiBaseController
             $solarMeterCharges = $request->input('solar_meter_charges', '');
             $solarStructureCharges = (float) ($request->input('solar_structure_charges') ?? 0);
             $invoiceDate = $request->input('invoice_date', now()->format('Y-m-d'));
-            $comment = $request->input('comment', '');
+            $comment = $request->input('comment') ?? '';
             $discount = (float) ($request->input('discount') ?? 0);
             $subsidyAmount = (float) ($request->input('subsidy_amount') ?? 0);
             $applyCharges = (int) ($request->input('apply_gst') ?? 0);
@@ -352,6 +353,7 @@ class InvoiceController extends ApiBaseController
             'price_mode' => 'nullable|in:base,bom',
             'reference_no' => 'nullable|string|max:255',
             'terms_conditions' => 'nullable|string|max:10000',
+            'comment' => 'nullable|string',
             'bom_specifications' => 'nullable|array',
             'bom_specifications.*' => 'array:make,technical',
             'bom_specifications.*.make' => 'nullable|string|max:2000',
@@ -396,7 +398,7 @@ class InvoiceController extends ApiBaseController
             $solarMeterCharges = $request->input('solar_meter_charges', '');
             $solarStructureCharges = (float) ($request->input('solar_structure_charges') ?? 0);
             $invoiceDate = $request->input('invoice_date', now()->format('Y-m-d'));
-            $comment = $request->input('comment', '');
+            $comment = $request->input('comment') ?? '';
             $discount = (float) ($request->input('discount') ?? 0);
             $subsidyAmount = (float) ($request->input('subsidy_amount') ?? 0);
             $applyCharges = (int) ($request->input('apply_gst') ?? 0);

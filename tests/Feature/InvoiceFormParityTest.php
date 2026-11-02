@@ -76,6 +76,27 @@ class InvoiceFormParityTest extends TestCase
         return Invoice::latest('id')->firstOrFail();
     }
 
+    public function test_blank_comments_can_be_saved_to_the_template_on_create_and_update(): void
+    {
+        foreach ([[], ['comment' => null], ['comment' => '']] as $comment) {
+            PdfBuilderForm::find(1)->update(['form_data' => [
+                'estimate_comment' => ['active' => 1, 'content' => 'Previous comment'],
+            ]]);
+            $invoice = $this->store(array_merge(['update_template_comment' => 1], $comment));
+            $this->assertSame('', $invoice->comment);
+            $this->assertSame('', PdfBuilderForm::find(1)->form_data['estimate_comment']['content']);
+
+            PdfBuilderForm::find(1)->update(['form_data' => [
+                'estimate_comment' => ['active' => 1, 'content' => 'Previous comment'],
+            ]]);
+            $request = new Request($this->payload(array_merge(['update_template_comment' => 1], $comment)));
+            $response = Invoice::withoutEvents(fn () => app(InvoiceController::class)->update($request, $invoice));
+            $this->assertSame(200, $response->status(), $response->getContent());
+            $this->assertSame('', $invoice->fresh()->comment);
+            $this->assertSame('', PdfBuilderForm::find(1)->form_data['estimate_comment']['content']);
+        }
+    }
+
     public function test_price_suggestions_are_calculated_by_capacity_and_do_not_save_an_invoice(): void
     {
         foreach ([10 => [300000, 400000, 450000], 3 => [90000, 120000, 135000]] as $kw => $expected) {
