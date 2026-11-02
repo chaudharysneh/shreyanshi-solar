@@ -8,6 +8,9 @@ class HtmlWordDocument
     private bool $completion=false;
     private bool $ending=false;
     private bool $signature=false;
+    private bool $agreement=false;
+    private bool $pageBefore=false;
+    private bool $keepGroup=false;
     private int $cellIndex=0;
     private function escape(string $text): string { return htmlspecialchars($text,ENT_XML1 | ENT_QUOTES,'UTF-8'); }
     private function runs(\DOMNode $node,bool $bold=false,int $size=20): string {
@@ -29,7 +32,7 @@ class HtmlWordDocument
         if (!$size) return '';
         $id=count($this->images)+1;
         $this->images[]=['id'=>'image'.$id,'path'=>'media/image'.$id.'.'.$matches[1],'bytes'=>$bytes];
-        $scale=min(450/$size[0],235/$size[1]);
+        $scale=min(495/$size[0],310/$size[1]);
         $width=$size[0]*$scale; $height=$size[1]*$scale;
         if (preg_match('/width:([0-9.]+)pt/',$style,$m)) $width=(float) $m[1];
         if (preg_match('/height:([0-9.]+)pt/',$style,$m)) $height=(float) $m[1];
@@ -39,16 +42,21 @@ class HtmlWordDocument
     private function paragraph(\DOMNode $node,int $size=20,bool $cell=false): string {
         $heading=in_array($node->nodeName,['h2','h3']);
         $center=$node->nodeName==='h2' || ($node instanceof \DOMElement && in_array($node->getAttribute('class'),['center','aadhaar']));
-        $size=$cell ? ($this->completion?17:18) : ($this->completion?18:$size);
+        // DOCX sizes use half-points; round PDF sizes to Word's nearest half-point.
+        $size=$cell ? ($this->completion?20:($this->agreement?19:21)) : ($this->completion?21:($this->agreement?21:23));
+        if ($node->nodeName==='h2') $size=$this->agreement?23:25;
+        if ($node->nodeName==='h3') $size=$this->agreement?21:23;
         $alignment=$center?'center':($cell?'left':'both');
         if ($this->signature && !$this->ending && $this->cellIndex>0) $alignment='right';
-        $line=$cell?($this->completion?190:234):($this->completion?216:270);
+        $line=(int) round($size*10*($cell?($this->completion?1.12:1.3):($this->completion?1.2:1.35)));
         $before=$node->nodeName==='h3'?320:0;
         if ($node instanceof \DOMElement && str_contains($node->getAttribute('class'),'spaced')) $before=600;
         if ($node instanceof \DOMElement && str_contains($node->getAttribute('class'),'aadhaar')) $before=560;
         $lineRule=$node instanceof \DOMElement && $node->getElementsByTagName('img')->length ? 'atLeast' : 'exact';
         $after=$cell?0:($heading?($this->completion?200:360):($this->completion?160:240));
-        return '<w:p><w:pPr><w:jc w:val="'.$alignment.'"/>'.($heading?'<w:keepNext/>':'').'<w:spacing w:before="'.$before.'" w:after="'.$after.'" w:line="'.$line.'" w:lineRule="'.$lineRule.'"/></w:pPr>'.$this->runs($node,false,$node->nodeName==='h2'?22:$size).'</w:p>';
+        $pageBreak=$this->pageBefore?'<w:pageBreakBefore/>':'';
+        $this->pageBefore=false;
+        return '<w:p><w:pPr>'.$pageBreak.'<w:keepLines/><w:jc w:val="'.$alignment.'"/>'.($heading || ($this->keepGroup && !$cell)?'<w:keepNext/>':'').'<w:spacing w:before="'.$before.'" w:after="'.$after.'" w:line="'.$line.'" w:lineRule="'.$lineRule.'"/></w:pPr>'.$this->runs($node,false,$size).'</w:p>';
 
     }
     private function table(\DOMElement $table): string {
@@ -89,20 +97,37 @@ class HtmlWordDocument
         $this->signature=false;
         return $xml.'</w:tbl><w:p><w:pPr><w:spacing w:after="0" w:line="'.$gap.'" w:lineRule="exact"/></w:pPr></w:p>';
     }
+    private function block(\DOMNode $node): string
+    {
+        if ($node->nodeType!==XML_ELEMENT_NODE) return '';
+        if ($node->nodeName==='div') {
+            $previousGroup=$this->keepGroup;
+            $style=$node->getAttribute('style');
+            if (preg_match('/page-break-before\s*:\s*always/i',$style)) $this->pageBefore=true;
+            if (preg_match('/page-break-inside\s*:\s*avoid/i',$style)) $this->keepGroup=true;
+            $xml='';
+            foreach ($node->childNodes as $child) $xml.=$this->block($child);
+            $this->keepGroup=$previousGroup;
+            return $xml;
+        }
+        $xml='';
+        if ($node->nodeName==='table' && str_contains($node->getAttribute('class'),'signatures')) {
+            $gap=$this->completion?320:($this->ending?240:680);
+            $xml.='<w:p><w:pPr>'.($this->keepGroup?'<w:keepNext/>':'').'<w:spacing w:after="0" w:line="'.$gap.'" w:lineRule="exact"/></w:pPr></w:p>';
+        }
+        return $xml.($node->nodeName==='table'?$this->table($node):$this->paragraph($node));
+    }
+
     public function render(array $sections): string {
-        $this->images=[]; $body='';
+        $this->images=[]; $this->pageBefore=false; $this->keepGroup=false; $body='';
         foreach ($sections as $index=>$html) {
             $this->completion=$index===0; $this->ending=$index===count($sections)-1;
+            $this->agreement=$index>=4;
             if ($index) $body.='<w:p><w:pPr><w:spacing w:after="0" w:line="1" w:lineRule="exact"/></w:pPr><w:r><w:br w:type="page"/></w:r></w:p>';
             $dom=new \DOMDocument;
             @$dom->loadHTML('<?xml encoding="UTF-8"><html><body>'.$html.'</body></html>');
             foreach ($dom->getElementsByTagName('body')->item(0)->childNodes as $node) {
-                if ($node->nodeType!==XML_ELEMENT_NODE) continue;
-                if ($node->nodeName==='table' && str_contains($node->getAttribute('class'),'signatures')) {
-                    $gap=$this->completion?320:($this->ending?240:680);
-                    $body.='<w:p><w:pPr><w:spacing w:after="0" w:line="'.$gap.'" w:lineRule="exact"/></w:pPr></w:p>';
-                }
-                $body.=$node->nodeName==='table'?$this->table($node):$this->paragraph($node);
+                $body.=$this->block($node);
             }
         }
         $xml='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';

@@ -18,9 +18,9 @@ tr { page-break-inside:avoid; } thead { display:table-header-group; }
 .completion-report .signatures { margin-top: 16pt; }
 .agreement-ending .signatures { margin-top: 12pt; }
 .agreement-ending .signatures td { text-align: left; padding: 8pt 5pt; }
-.net-metering-agreement { font-size:11pt; }
-.net-metering-agreement h2 { font-size:12pt; }
-.net-metering-agreement h3 { font-size:11pt; }
-.net-metering-agreement table { font-size:10pt; }
+.net-metering-agreement { font-size:10.7pt; }
+.net-metering-agreement h2 { font-size:11.7pt; }
+.net-metering-agreement h3 { font-size:10.7pt; }
+.net-metering-agreement table { font-size:9.7pt; }
 .clause { margin-bottom:10pt; } .clause-number { font-weight:bold; }
 </style></head><body>@foreach($sections as $section)<div class="document-section {{ $loop->first ? 'completion-report' : '' }} {{ $loop->last ? 'agreement-ending' : '' }} {{ $loop->index >= 4 ? 'net-metering-agreement' : '' }}">{!! $section !!}</div>@endforeach</body></html>

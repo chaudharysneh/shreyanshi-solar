@@ -72,8 +72,16 @@ class SolarDocumentTest extends TestCase
             $this->assertStringContainsString('PANEL-0001',$xml);
             $this->assertStringContainsString('TEST-SUBDIVISION-ADDRESS',$xml);
             $this->assertStringContainsString('<w:tbl>',$xml);
-            $this->assertStringContainsString('w:sz w:val="17"',$xml);
-            $this->assertStringContainsString('w:line="190" w:lineRule="exact"',$xml);
+            $this->assertStringContainsString('w:sz w:val="20"',$xml);
+            $this->assertStringContainsString('w:sz w:val="23"',$xml);
+            $this->assertStringContainsString('w:sz w:val="21"',$xml);
+            $this->assertStringContainsString('w:line="224" w:lineRule="exact"',$xml);
+            $this->assertStringContainsString('<w:pageBreakBefore/>',$xml);
+            $this->assertStringContainsString('Type of charge controller/MPPT',$xml);
+            $this->assertStringContainsString('0.1 kW',$xml);
+            $this->assertStringContainsString('6540 Wp',$xml);
+            $this->assertStringContainsString('cx="6286500"',$xml);
+            $this->assertStringContainsString('Signature of the MSEDCL Officer Name,',$xml);
             $this->assertStringContainsString('w:lineRule="atLeast"',$xml);
             $this->assertStringContainsString('w:tblLayout w:type="fixed"',$xml);
             $this->assertStringContainsString('w:jc w:val="right"',$xml);
