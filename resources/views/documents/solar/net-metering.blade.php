@@ -1,3 +1,4 @@
+<h3 class="center" style="text-align:center;margin:0 0 10pt;page-break-after:avoid;">Annexure 3</h3>
 <h2>Model Net Metering Connection<br>Agreement</h2>
 <p>This Agreement is made and entered into at (location) <b>{{ $value('sub_division') }}</b> on this (date) <b>{{ $value('date_day') }}</b> day of (month) <b>{{ $value('date_month_short') }}</b> (year) <b>{{ $value('year') }}</b> between the Eligible Consumer (Name) <b>{{ $value('consumer_name') }}</b> having premises at (address) <b>{{ $value('address') }}</b>, and Consumer No. <b>{{ $value('consumer_number') }}</b> as follows the first Party,</p>
 <p class="center">AND</p>

@@ -15,4 +15,3 @@
 <p>4. The above undertaking is based on the certificate issued by PV Module manufacturer/supplier while supplying the above-mentioned order.</p>
 <p>5. I, <b>YOGESH JADHAV</b> on behalf of <b>SHREYANSHI ENTERPRISES</b> further declares that the information given above is true and correct and nothing has been concealed herein. In anything is found incorrect at any stage, then the REC/ MNRE may take any appropriate action against my company for wrong declaration. Supporting documents and proof of the above information will be provided as and when requested by MNRE.</p>
 <p class="spaced"><b>(Signature With official Seal)<br>For M/S: - SHREYANSHI ENTERPRISES<br>Name: - YOGESH JADHAV<br>Designation: - PROPRIETOR<br>Phone: - 9168257511<br>Email: - yogeshjadhav101925@gmail.com</b></p>
-<p class="center spaced"><b>Annexure – 3</b></p>
