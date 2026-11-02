@@ -1448,6 +1448,24 @@ if (isset($after_blocks) && is_array($after_blocks)) {
         <div style="height: 62%; width: 100%; overflow: hidden; position: relative;">
             <img src="<?= $header_image ?>" alt="Header Image"
                 style="width: 100%; height: 100%; object-fit: cover; display: block;">
+            <?php
+            // A transparent PNG keeps the white fade reliable in Dompdf.
+            $coverFade = imagecreatetruecolor(2, 240);
+            imagealphablending($coverFade, false);
+            imagesavealpha($coverFade, true);
+            for ($fadeRow = 0; $fadeRow < 240; $fadeRow++) {
+                $fadeProgress = $fadeRow / 239;
+                $fadeAlpha = (int) round(127 * (1 - $fadeProgress * $fadeProgress));
+                $fadeColor = imagecolorallocatealpha($coverFade, 255, 255, 255, $fadeAlpha);
+                imageline($coverFade, 0, $fadeRow, 1, $fadeRow, $fadeColor);
+            }
+            ob_start();
+            imagepng($coverFade);
+            $coverFadeData = base64_encode(ob_get_clean());
+            imagedestroy($coverFade);
+            ?>
+            <img src="data:image/png;base64,<?= $coverFadeData ?>" alt=""
+                style="position:absolute;bottom:0;left:0;width:100%;height:200px;">
         </div>
 
         <!-- Bottom Half: Content Section with Red Border -->

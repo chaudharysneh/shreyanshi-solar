@@ -5,7 +5,7 @@
 <style>
     .document-summary-view {
         font-family: 'Montserrat', Arial, sans-serif;
-        color: #000;
+        color: #24372d;
     }
 
     .document-summary-view table {
@@ -18,9 +18,9 @@
     .document-summary-view .summary-header-cell,
     .detail-view-card .document-summary-view .summary-header-cell,
     .detail-view-card .document-summary-view td.summary-header-cell {
-        background-color: #4b9349;
+        background-color: #327548;
         color: #fff !important;
-        border: 1px solid #333;
+        border: 1px solid #cbdcd0;
         padding: 5px 8px;
         font-size: 15px;
         font-weight: bold;
@@ -33,7 +33,7 @@
     }
 
     .document-summary-view .summary-cell {
-        border: 1px solid #333;
+        border: 1px solid #cbdcd0;
         padding: 5px 8px;
         font-size: 15px;
         line-height: 1.25;
@@ -46,7 +46,7 @@
     .document-summary-view .summary-highlight,
     .detail-view-card .document-summary-view .summary-highlight,
     .detail-view-card .document-summary-view td.summary-highlight {
-        background-color: #4b9349;
+        background-color: #327548;
         color: #fff !important;
         font-weight: bold;
         text-align: right;
@@ -60,9 +60,9 @@
     .document-summary-view .summary-footer-header,
     .detail-view-card .document-summary-view .summary-footer-header,
     .detail-view-card .document-summary-view th.summary-footer-header {
-        background-color: #4b9349;
+        background-color: #327548;
         color: #fff !important;
-        border: 1px solid #333;
+        border: 1px solid #cbdcd0;
         padding: 4px 6px;
         font-size: 13px;
         font-weight: bold;
@@ -70,7 +70,7 @@
     }
 
     .document-summary-view .summary-footer-cell {
-        border: 1px solid #333;
+        border: 1px solid #cbdcd0;
         padding: 4px 6px;
         font-size: 13px;
         line-height: 1.2;
@@ -97,7 +97,7 @@
     .document-summary-view .summary-bank-title,
     .detail-view-card .document-summary-view .summary-bank-title,
     .detail-view-card .document-summary-view td.summary-bank-title {
-        background-color: #4b9349;
+        background-color: #327548;
         color: #fff !important;
         padding: 4px 6px;
         font-size: 13px;
@@ -167,36 +167,32 @@
         </tr>
     </table>
 
-    <table class="summary-meta-row" style="margin-bottom:8px;">
-        <tr>
-            <td width="33%" align="left" class="summary-meta">{{ isset($invoice) ? 'Invoice' : 'Estimate' }} no.: #{{ $summaryEstimateNo ?? '--' }}</td>
-            <td width="34%" align="center" class="summary-meta" style="text-decoration:underline;">{{ isset($invoice) ? 'INVOICE' : 'ESTIMATION' }}</td>
-            <td width="33%" align="right" class="summary-meta">Date: {{ $summaryDate ?? '--' }}</td>
-        </tr>
-    </table>
-
-    <table class="summary-customer-table" style="margin-top:6px;margin-bottom:8px;">
-        <tr>
-            <td colspan="4" class="summary-header-cell">Customer Details</td>
-        </tr>
-        <tr>
-            <td class="summary-cell"><strong>Customer Name</strong></td>
-            <td class="summary-cell">{{ $estdata->name ?? '--' }}</td>
-            <td class="summary-cell"><strong>Email</strong></td>
-            <td class="summary-cell">{{ $estdata->email ?? '--' }}</td>
-        </tr>
-        <tr>
-            <td class="summary-cell"><strong>Address</strong></td>
-            <td class="summary-cell">{{ $estdata->address ?? '--' }}</td>
-            <td class="summary-cell"><strong>Contact</strong></td>
-            <td class="summary-cell">{{ $estdata->phone ?? '--' }}</td>
-        </tr>
-    </table>
-
+    @php
+        $viewCompanySettings = [
+            'company_tax_id' => $summaryCompanyTaxId ?? '',
+        ];
+    @endphp
+    @if (isset($invoice) && empty($summaryUsesGlobalTax))
+        @include('pdfbuilder.partials.invoice-body', [
+            'estimate' => $invoice,
+            'companySettings' => $viewCompanySettings,
+            'summaryHasBank' => ($summaryShowBankDetails ?? true) && (!empty($summaryBankName) || !empty($summaryBankFields)),
+            'summaryHasQr' => ($summaryShowCompanyQrCode ?? true) && !empty($summaryQrUrl),
+            'summaryQrImage' => $summaryQrUrl ?? '',
+            'summaryHasComment' => !in_array(trim((string) ($summaryEstimateComment ?? '')), ['', '-', '--'], true),
+        ])
+    @else
+        @include('pdfbuilder.partials.invoice-customer-header', [
+            'estimate' => $invoice ?? $estimate ?? null,
+            'companySettings' => $viewCompanySettings,
+            'documentTitle' => isset($invoice) ? 'INVOICE' : 'ESTIMATION',
+            'documentNumberLabel' => isset($invoice) ? 'Invoice No.' : 'Estimate No.',
+            'showCustomerEmail' => !isset($invoice),
+        ])
     <table style="margin-top:6px;margin-bottom:8px;">
         <tr>
-            <td class="summary-header-cell" style="width:68%;">Description</td>
-            <td class="summary-header-cell summary-cell-right" style="width:32%;">Amount (&#8377;)</td>
+            <td class="summary-header-cell summary-pricing-header" style="width:68%;">Description</td>
+            <td class="summary-header-cell summary-cell-right summary-pricing-header" style="width:32%;">Amount (&#8377;)</td>
         </tr>
         @if (!empty($summaryUsesGlobalTax))
             <tr>
@@ -368,4 +364,29 @@
             </tr>
         </tbody>
     </table>
+    @endif
 </div>
+
+<style>
+
+    .detail-view-card .document-summary-view .summary-header-cell,
+    .detail-view-card .document-summary-view .summary-header-cell *,
+    .detail-view-card .document-summary-view .summary-footer-header,
+    .detail-view-card .document-summary-view .summary-footer-header * {
+        background: #eaf3ec; color: #245d38 !important;
+    }
+    .detail-view-card .document-summary-view .summary-pricing-header,
+    .detail-view-card .document-summary-view .summary-pricing-header * {
+        background: #327548; color: #fff !important;
+    }
+    .document-summary-view .summary-footer-cell { background: #f5f9f6; }
+    .document-summary-view .reference-invoice,
+    .document-summary-view .invoice-customer-header { font-size: 14px; }
+    .document-summary-view .reference-invoice table,
+    .document-summary-view .invoice-customer-header table { width: 100%; }
+    .document-summary-view .reference-invoice .items { font-size: 13px; }
+    .document-summary-view .reference-invoice .document-notes { font-size: 13px; }
+    .document-summary-view .reference-invoice .payable { font-size: 15px; }
+    .document-summary-view .reference-invoice .grid td,
+    .document-summary-view .reference-invoice .grid th { padding: 9px 10px; }
+</style>

@@ -114,6 +114,14 @@ class InvoiceFormParityTest extends TestCase
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadHTML('<html><meta charset="UTF-8"><body>'.$html.'</body></html>')->setPaper('a4');
         $this->assertStringStartsWith('%PDF-', $pdf->output());
         $this->assertSame(1, $pdf->getDomPDF()->getCanvas()->get_page_count());
+        foreach (['invoice', 'estimate'] as $documentKind) {
+            $viewHtml = view('crm.partials.document-summary-view', [
+                'documentSummary' => $summary, $documentKind => $invoice,
+            ])->render();
+            $this->assertStringContainsString('Billing Address', $viewHtml);
+            $this->assertStringContainsString('Shipping Address', $viewHtml);
+            $this->assertStringContainsString('256.00', $viewHtml);
+        }
     }
 
     public function test_table_display_choices_persist_and_reflow_without_changing_totals(): void
