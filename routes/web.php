@@ -235,6 +235,8 @@ Route::middleware(['auth', 'no.cache'])->group(function () {
     // update status
     Route::post('invoices/{invoice}/status', [InvoiceController::class, 'updateStatus'])->middleware('matrix_permission:edit_invoices')->name('invoices.status');
     Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'pdf'])->middleware('matrix_permission:view_invoices')->name('invoices.pdf');
+    Route::get('invoices/{invoice}/receipts', [\App\Http\Controllers\InvoiceReceiptController::class, 'index'])->middleware('matrix_permission:view_invoices')->name('invoices.receipts');
+    Route::get('invoices/{invoice}/receipts/pdf', [\App\Http\Controllers\InvoiceReceiptController::class, 'pdf'])->middleware('matrix_permission:view_invoices')->name('invoices.receipts.pdf');
     Route::get('invoices-export', [InvoiceController::class, 'export'])->middleware('matrix_permission:view_invoices')->name('invoices.export');
 
     Route::get('bookings/{booking}/invoice/create', [InvoiceController::class, 'createByBooking'])->name('bookings.invoice.create');

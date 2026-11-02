@@ -178,6 +178,7 @@
                             ${permissions.view ? `<a href="/invoices/${invoice.id}" class="btn crm-action-btn btn-sm" title="View"><i class="bi bi-eye"></i></a>` : ''}
                             ${permissions.edit && invoice.estimate ? `<button type="button" class="btn crm-action-btn btn-sm" data-estimate-id="${invoice.estimate_id}" data-equipment-url="/api/equipment/estimates/${invoice.estimate_id}?invoice_id=${invoice.id}" title="Edit Equipment Details"><i class="bi bi-upc-scan"></i></button>` : ''}
                             ${permissions.edit && invoice.status !== 'paid' ? `<a href="/invoices/${invoice.id}/edit" class="btn crm-action-btn btn-sm" title="Edit"><i class="bi bi-pencil"></i></a>` : permissions.edit && invoice.status === 'paid' ? `<button class="btn crm-action-btn btn-sm" disabled title="Cannot edit paid invoice"><i class="bi bi-pencil"></i></button>` : ''}
+                            ${permissions.view ? `<a href="/invoices/${invoice.id}/receipts" class="btn crm-action-btn btn-sm" title="Download payment receipts" aria-label="Download payment receipts"><i class="bi bi-receipt"></i></a>` : ''}
                             ${permissions.view ? `<a href="/invoices/${invoice.id}/pdf" class="btn crm-action-btn btn-sm" target="_blank" title="Download PDF"><i class="bi bi-file-earmark-pdf"></i></a>` : ''}
                             ${permissions.delete ? `<button type="button" class="btn crm-action-btn btn-sm text-danger delete-btn" data-invoice-id="${invoice.id}" title="Delete"><i class="bi bi-trash"></i></button>` : ''}
                         </div>
@@ -220,7 +221,8 @@
                                         ${permissions.view ? `<a href="/invoices/${invoice.id}" class="btn crm-action-btn btn-sm"><i class="bi bi-eye"></i></a>` : ''}
                                         ${permissions.edit && invoice.estimate ? `<button type="button" class="btn crm-action-btn btn-sm" data-estimate-id="${invoice.estimate_id}" data-equipment-url="/api/equipment/estimates/${invoice.estimate_id}?invoice_id=${invoice.id}" title="Edit Equipment Details"><i class="bi bi-upc-scan"></i></button>` : ''}
                                         ${permissions.edit ? `<a href="/invoices/${invoice.id}/edit" class="btn crm-action-btn btn-sm"><i class="bi bi-pencil"></i></a>` : ''}
-                                        ${permissions.view ? `<a href="/invoices/${invoice.id}/pdf" class="btn crm-action-btn btn-sm" target="_blank"><i class="bi bi-file-earmark-pdf"></i></a>` : ''}
+                                        ${permissions.view ? `<a href="/invoices/${invoice.id}/receipts" class="btn crm-action-btn btn-sm" title="Download payment receipts" aria-label="Download payment receipts"><i class="bi bi-receipt"></i></a>` : ''}
+                            ${permissions.view ? `<a href="/invoices/${invoice.id}/pdf" class="btn crm-action-btn btn-sm" target="_blank"><i class="bi bi-file-earmark-pdf"></i></a>` : ''}
                                         ${permissions.delete ? `<button type="button" class="btn crm-action-btn btn-sm text-danger delete-btn" data-invoice-id="${invoice.id}"><i class="bi bi-trash"></i></button>` : ''}
                                     </div>
                                 </div>

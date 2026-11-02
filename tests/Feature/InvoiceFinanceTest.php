@@ -19,6 +19,26 @@ class InvoiceFinanceTest extends TestCase {
         DB::table('customers')->insert(['id'=>1,'name'=>'Customer 1']);DB::table('currencies')->insert(['id'=>1,'code'=>'INR']);DB::table('invoices')->insert(['id'=>1,'customer_id'=>1,'user_id'=>1,'currency_id'=>1,'invoice_name'=>'Installation','invoice_no'=>'INV-1','amount'=>300000,'status'=>'unpaid']);
     }
     private function data(array $changes=[]): array {return array_merge(['request_key'=>(string)Str::uuid(),'action'=>'plan','settlement'=>'partial','funding_type'=>'bank','bank_amount'=>200000,'down_payment'=>50000,'bank_name'=>'Test Bank','branch_name'=>'Surat','loan_reference'=>'LN-1','customer_received_now'=>0,'bank_received_now'=>0,'payment_date'=>'2020-01-01','payment_method'=>'upi'],$changes);}
+    public function test_partial_payments_have_separate_customer_and_bank_receipt_downloads(): void {
+        Schema::create('settings', function (Blueprint $t) { $t->id(); $t->string('key'); $t->string('value')->nullable(); $t->softDeletes(); });
+        Invoice::withoutEvents(fn () => app(InvoiceFinanceService::class)->save(Invoice::first(), $this->data([
+            'action'=>'payment', 'customer_received_now'=>25000, 'bank_received_now'=>50000,
+        ]), 1));
+        $controller=\Mockery::mock(\App\Http\Controllers\InvoiceReceiptController::class)->makePartial();
+        $controller->shouldReceive('authorize')->with('view', \Mockery::type(Invoice::class))->andReturn(true);
+        foreach (['customer', 'bank'] as $source) {
+            $payment=Payment::where('source',$source)->firstOrFail();
+            $response=$controller->pdf(new \Illuminate\Http\Request(['source'=>$source, 'payment'=>$payment->id]), Invoice::first(), app(InvoiceFinanceService::class));
+            $this->assertStringStartsWith('%PDF-', $response->getContent());
+            $this->assertStringContainsString('RCT-', $response->headers->get('Content-Disposition'));
+        }
+        $invoice=Invoice::first();$summary=app(InvoiceFinanceService::class)->summary($invoice);
+        $html=view('crm.invoices.receipt-pdf', ['invoice'=>$invoice,'summary'=>$summary,'payments'=>Payment::where('source','bank')->get(), 'source'=>'bank','settings'=>collect(['company_name'=>'Test Solar']),'logo'=>null,'single'=>true,'reference'=>'RCT-TEST'])->render();
+        foreach (['75,000.00', '150,000.00', '225,000.00', 'Test Bank', 'PAYMENT RECEIPT'] as $text) $this->assertStringContainsString($text,$html);
+        $payment=Payment::where('source','bank')->first();$payment->update(['voided_at'=>now()]);
+        $this->expectException(\Symfony\Component\HttpKernel\Exception\HttpException::class);
+        $controller->pdf(new \Illuminate\Http\Request(['source'=>'bank','payment'=>$payment->id]), Invoice::first(), app(InvoiceFinanceService::class));
+    }
     public function test_daily_overview_shows_only_authorized_unreceived_bank_funding(): void {
         $user = new class extends \App\Models\User {
             public bool $financeAllowed = true;
