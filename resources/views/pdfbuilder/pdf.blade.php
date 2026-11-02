@@ -1423,6 +1423,20 @@ if (isset($after_blocks) && is_array($after_blocks)) {
     $normalized_header = !empty($header_image) ? normalize_pdf_image($header_image) : '';
     $header_image = strpos($normalized_header, 'data:image') === 0 ? $normalized_header : normalize_pdf_image('public/assets/img/header_Image.jpg');
     ?>
+<style>
+    .pdf-document-footer {
+        border: 0 !important;
+        color: #7b8280 !important;
+        background: #fff !important;
+    }
+    .pdf-document-footer td {
+        border: 0 !important;
+        color: #7b8280 !important;
+        font-size: 12px !important;
+        font-weight: normal !important;
+        line-height: 1.4 !important;
+    }
+</style>
 </head>
 
 <body>
@@ -1624,7 +1638,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
             </div>
             @include('pdfbuilder.partials.company-info-about')
         </div>
-        <table width="100%" cellpadding="0" cellspacing="0"
+        <table class="pdf-document-footer" width="100%" cellpadding="0" cellspacing="0"
             style="position:fixed; bottom:10; left:0; right:0;
                     background:#fff; color:#4b9349; height:40px; border-top: 1px solid #4b9349;">
             <tr>
@@ -1660,7 +1674,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
             @include('pdfbuilder.partials.company-gallery')
         </div>
 
-        <table width="100%" cellpadding="0" cellspacing="0"
+        <table class="pdf-document-footer" width="100%" cellpadding="0" cellspacing="0"
             style="position:fixed; bottom:10; left:0; right:0;
                     background:#fff; color:#4b9349; height:40px; border-top: 1px solid #4b9349;">
             <tr>
@@ -1743,7 +1757,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
         </div>
 
         <!-- Footer -->
-        <table width="100%" cellpadding="0" cellspacing="0"
+        <table class="pdf-document-footer" width="100%" cellpadding="0" cellspacing="0"
             style="position:fixed; bottom:10; left:0; right:0; background:#fff; color:#4b9349; height:40px; border-top: 1px solid #4b9349;">
             <tr>
                 <td width="33.33%" style="padding:10px; font-family: 'Montserrat', sans-serif;">
@@ -1818,7 +1832,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
         </div>
 
         <!-- Footer -->
-        <table width="100%" cellpadding="0" cellspacing="0"
+        <table class="pdf-document-footer" width="100%" cellpadding="0" cellspacing="0"
             style="position:fixed; bottom:10; left:0; right:0; background:#fff; color:#4b9349; height:40px; border-top: 1px solid #4b9349;">
             <tr>
                 <td width="33.33%" style="padding:10px; font-family: 'Montserrat', sans-serif;">
@@ -2235,7 +2249,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
             <?php endif; ?>
         </div>
         <!-- ================= FOOTER ================= -->
-        <table width="100%" cellpadding="0" cellspacing="0"
+        <table class="pdf-document-footer" width="100%" cellpadding="0" cellspacing="0"
             style="position:fixed; bottom:10; left:0; right:0;
                         background:#fff; color:#4b9349; height:40px; border-top: 1px solid #4b9349;">
             <tr>
@@ -2585,7 +2599,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
         <div
             style="position:fixed; bottom:10; left:0; right:0;
                         background:#4b9349; color:#fff; height:40px; border-top: 1px solid #fff;">
-            <table width="100%" height="36" cellpadding="0" cellspacing="0"
+            <table class="pdf-document-footer" width="100%" height="36" cellpadding="0" cellspacing="0"
                 style="font-size:11px; color:#fff;">
                 <tr>
                     <td width="33.33%" style="padding:10px; font-family: 'Montserrat', sans-serif; font-size:16px;">
@@ -2701,7 +2715,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
         </div>
 
         <!-- Footer -->
-        <table width="100%" cellpadding="0" cellspacing="0"
+        <table class="pdf-document-footer" width="100%" cellpadding="0" cellspacing="0"
             style="position:fixed; bottom:10; left:0; right:0; background:#fff; color:#4b9349; height:40px; border-top: 1px solid #4b9349;">
             <tr>
                 <td width="33.33%" style="padding:10px; font-family: 'Montserrat', sans-serif;">
@@ -2721,7 +2735,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
     <div
         style="position:fixed; bottom:10; left:0; right:0;
                         background:#4b9349; color:#fff; height:40px; border-top: 1px solid #fff;">
-        <table width="100%" height="36" cellpadding="0" cellspacing="0" style="font-size:11px; color:#fff;">
+        <table class="pdf-document-footer" width="100%" height="36" cellpadding="0" cellspacing="0" style="font-size:11px; color:#fff;">
             <tr>
                 <td width="33.33%" style="padding:10px; font-family: 'Montserrat', sans-serif; font-size:16px;">
                     <?= $quantity ?>kW Ongrid <?= $pdfTypeLabelMixed ?>
@@ -2890,7 +2904,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
 
         </div>
         <!-- ================= FOOTER ================= -->
-        <table width="100%" cellpadding="0" cellspacing="0"
+        <table class="pdf-document-footer" width="100%" cellpadding="0" cellspacing="0"
             style="position:fixed; bottom:10; left:0; right:0;
                         background:#fff; color:#4b9349; height:40px; border-top: 1px solid #4b9349;">
             <tr>
@@ -3196,7 +3210,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
             @include('pdfbuilder.partials.estimate-invoice-summary')
         </div>
         @if (empty($invoiceOnly))
-        <table width="100%" cellpadding="0" cellspacing="0"
+        <table class="pdf-document-footer" width="100%" cellpadding="0" cellspacing="0"
             style="position:fixed; bottom:{{ !empty($invoiceOnly) ? '0' : '10px' }}; left:0; right:0;
                     background:#fff; color:#4b9349; height:40px; border-top: 1px solid #4b9349;">
             <tr>
@@ -3240,7 +3254,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
             ])
             <?php endif; ?>
         </div>
-        <table width="100%" cellpadding="0" cellspacing="0"
+        <table class="pdf-document-footer" width="100%" cellpadding="0" cellspacing="0"
             style="position:fixed; bottom:10; left:0; right:0;
                     background:#fff; color:#4b9349; height:40px; border-top: 1px solid #4b9349;">
             <tr>
@@ -3381,7 +3395,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
             </div>
         </div>
         <!-- Footer -->
-        <table width="100%" cellpadding="0" cellspacing="0"
+        <table class="pdf-document-footer" width="100%" cellpadding="0" cellspacing="0"
             style="position:fixed; bottom:10; left:0; right:0;
                     background:#fff; color:#4b9349; height:40px; border-top: 1px solid #4b9349;">
             <tr>
@@ -3527,7 +3541,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
             </div>
         </div>
         <!-- Footer -->
-        <table width="100%" cellpadding="0" cellspacing="0"
+        <table class="pdf-document-footer" width="100%" cellpadding="0" cellspacing="0"
             style="position:fixed; bottom:10; left:0; right:0;
                     background:#fff; color:#4b9349; height:40px; border-top: 1px solid #4b9349;">
             <tr>
@@ -3667,7 +3681,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
             </div>
         </div>
 
-        <table width="100%" cellpadding="0" cellspacing="0"
+        <table class="pdf-document-footer" width="100%" cellpadding="0" cellspacing="0"
             style="position:fixed;bottom:10;left:0;right:0;background:#fff;color:#4b9349;height:40px;border-top:1px solid #4b9349;">
             <tr>
                 <td width="33.33%" style="padding:10px;font-family:'Montserrat',sans-serif;">
@@ -3834,7 +3848,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
             </table>
         </div>
         <!-- Footer -->
-        <table width="100%" cellpadding="0" cellspacing="0"
+        <table class="pdf-document-footer" width="100%" cellpadding="0" cellspacing="0"
             style="position:fixed; bottom:10; left:0; right:0;
                     background:#fff; color:#4b9349; height:40px; border-top: 1px solid #4b9349;">
             <tr>

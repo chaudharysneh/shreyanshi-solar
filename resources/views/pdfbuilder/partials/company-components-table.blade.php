@@ -1,13 +1,10 @@
 <div>
 <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:10px 0 18px;border:0;font-family:'DejaVu Sans',sans-serif;page-break-inside:auto;table-layout:fixed;">
     <thead>
-        <tr aria-hidden="true"><td colspan="3" style="height:40px;padding:0;border:0;background:#fff;font-size:1px;line-height:40px;">&nbsp;</td></tr>
         <tr>
-            <td colspan="3" style="padding:0 0 18px;border:0;background:#fff;text-align:left;">
+            <td colspan="3" style="padding:40px 0 18px;border:0;background:#fff;text-align:left;">
                 <?php if (isset($quantity)): ?>
-                <div style="font-size:18px;font-weight:normal;font-family:'Montserrat',sans-serif;color:#000;margin-bottom:28px;">
-                    <?= esc($quantity) ?>kW Ongrid <?= esc($pdfTypeLabelMixed ?? 'Proposal') ?>
-                </div>
+                @include('pdfbuilder.partials.pdf-page-header')
                 <?php endif; ?>
                 <div style="font-size:32px;font-weight:bold;line-height:1.15;font-family:'Montserrat',sans-serif;color:#000;border-left:8px solid #4b9349;padding-left:18px;">BOM (Bill of Materials)</div>
             </td>
