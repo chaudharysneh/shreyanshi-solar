@@ -704,7 +704,7 @@
                                     @endforeach
                                 </div>
 
-                                <button type="button" class="btn btn-outline-dark-blue btn-sm" id="add_more_bom">
+                                <button type="button" class="btn btn-dark-blue btn-sm mt-3" id="add_more_bom">
                                     <i class="bi bi-plus-circle me-1"></i>Add More BOM
                                 </button>
                                 <div class="estimate-bom-instruction" id="products-error" style="display:none;" role="status">

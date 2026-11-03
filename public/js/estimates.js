@@ -1024,6 +1024,10 @@
                 }
 
                 makeSelect.innerHTML = '<option value="">Select Make</option>';
+                if ((categories || []).length > 1) {
+                    const combined = categories.join(', ');
+                    makeSelect.add(new Option(combined, combined, false, selectedValue === combined));
+                }
                 (categories || []).forEach(function (categoryName) {
                     const option = document.createElement('option');
                     option.value = categoryName;
@@ -1249,8 +1253,23 @@
                     }
                 });
 
+                const first = container.querySelector('.quick-bom-row');
+                const defaults = Array.from(first?.querySelector('.quick-bom-select')?.options || [])
+                    .filter(option => option.dataset.estimateDefault === '1');
+                defaults.forEach(function (option, index) {
+                    if (index > 0) document.getElementById('quickAddBomRow')?.click();
+                    const row = container.lastElementChild;
+                    const select = row.querySelector('.quick-bom-select');
+                    select.value = option.value;
+                    const names = JSON.parse(option.dataset.categories || '[]');
+                    syncQuickBomRowFromSelection(row, names.join(', '));
+                    if (window.jQuery) window.jQuery(select).trigger('change.select2');
+                });
                 updateQuickBomDeleteButtons();
+                calculateQuickEstimateTotals();
             };
+
+            resetQuickBomRows();
 
             const resetQuickEstimateForm = function () {
                 form.reset();
@@ -3438,10 +3457,11 @@
             });
         });
 
-        if (container.dataset.prefillAll === 'true') {
+        if (container.dataset.prefillDefaults === 'true' && !container.querySelector('.product-select')?.value) {
             const firstRow = container.querySelector('.bom-row');
             const template = firstRow.cloneNode(true);
             const productIds = Array.from(firstRow.querySelector('.product-select').options)
+                .filter(option => option.dataset.estimateDefault === '1')
                 .map(option => option.value).filter(Boolean);
             prefillingBomRows = true;
             productIds.forEach(function (id, index) {
@@ -3451,7 +3471,14 @@
                 row.querySelector('.delete-bom-row').setAttribute('aria-label', 'Remove BOM item');
                 $(row.querySelector('.product-select')).val(id).trigger('change');
                 const make = row.querySelector('.product-make');
-                if (make.options.length > 1) make.selectedIndex = 1;
+                const names = JSON.parse(row.querySelector('.product-select').selectedOptions[0]?.dataset.categories || '[]');
+                if (!make.disabled && names.length) {
+                    const combined = names.join(', ');
+                    if (!Array.from(make.options).some(option => option.value === combined)) {
+                        make.add(new Option(combined, combined));
+                    }
+                    $(make).val(combined).trigger('change');
+                }
             });
             prefillingBomRows = false;
             calculateTotals();
@@ -3493,6 +3520,10 @@
 
         try {
             const categoryList = JSON.parse(categories);
+            const combined = categoryList.join(', ');
+            if (categoryList.length > 1) {
+                makeSelect.add(new Option(combined, combined, false, selectedValue === combined));
+            }
             categoryList.forEach(function (cat) {
                 const option = document.createElement('option');
                 option.value = cat;

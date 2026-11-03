@@ -46,6 +46,7 @@
                 <table class="table table-hover align-middle mb-0" id="bomProductsTable">
                     <thead>
                         <tr>
+                            <th class="ps-4" style="width: 100px;">Estimate default</th>
                             <th class="ps-4" style="width: 80px;">Sr.No</th>
                             <th>Name</th>
                             <th class="d-none d-md-table-cell">HSN/SAC</th>
@@ -138,6 +139,7 @@
 <script>
     window.bomProductsConfig = {
         indexUrl: @json(route('api.bom-products.index')),
+        updateUrlTemplate: @json(route('api.bom-products.update', ['bomProduct' => '__ID__'])),
         storeUrl: @json(route('api.bom-products.store')),
         makeStoreUrl: @json(route('api.make.store')),
         technologyStoreUrl: @json(route('api.technology.store')),

@@ -14,6 +14,8 @@ class BomProduct extends Model
 
     protected $table = 'product';
 
+    protected $casts = ['estimate_default' => 'boolean'];
+
     protected $fillable = [
         'user_id',
         'product_name',

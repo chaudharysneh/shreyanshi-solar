@@ -579,7 +579,7 @@
                         <div class="col-12 create-step-2">
                             <label class="form-label fw-semibold">BOM (Bill Of Material)</label>
                             <div class="bom-section bg-light rounded-3 p-2 border">
-                                <div id="bomContainer" style="max-height:60vh;overflow-y:auto;overflow-x:hidden;padding-right:8px;">
+                                <div id="bomContainer" data-prefill-defaults="true" style="max-height:60vh;overflow-y:auto;overflow-x:hidden;padding-right:8px;">
                                     <div class="bom-row mb-3 p-3 bg-white border rounded shadow-sm">
                                             <div class="bom-row-grid" @style([$estimatePriceMode === 'base' ? 'grid-template-columns: minmax(180px, 2fr) minmax(130px, 1.2fr) minmax(90px, .7fr) minmax(70px, auto)' : ''])>
                                             <div>
@@ -592,6 +592,7 @@
                                                         @if (isset($bomProducts))
                                                             @foreach ($bomProducts as $bom)
                                                                 <option value="{{ $bom->id }}"
+                                                                    data-estimate-default="{{ $bom->estimate_default ? '1' : '0' }}"
                                                                     data-name="{{ $bom->product_name }}"
                                                                     data-hsn="{{ $bom->hsn_sac ?? "" }}"
                                                                     data-desc="{{ $bom->description ?? '' }}"
@@ -660,7 +661,7 @@
                                     </div>
                                 </div>
 
-                                <button type="button" class="btn btn-outline-dark-blue btn-sm" id="add_more_bom">
+                                <button type="button" class="btn btn-dark-blue btn-sm mt-3" id="add_more_bom">
                                     <i class="bi bi-plus-circle me-1"></i>Add More BOM
                                 </button>
                                 <div class="estimate-bom-instruction" id="products-error" style="display:none;" role="status">

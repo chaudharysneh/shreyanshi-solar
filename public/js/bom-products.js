@@ -52,6 +52,30 @@
 
         let searchTimer = null;
 
+        tableBody?.addEventListener('change', async function (event) {
+            const checkbox = event.target.closest('.estimate-default-checkbox');
+            if (!checkbox) return;
+            checkbox.disabled = true;
+            try {
+                const response = await fetch(buildUrl(config.updateUrlTemplate, checkbox.dataset.id), {
+                    method: 'PATCH',
+                    credentials: 'same-origin',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                    },
+                    body: JSON.stringify({ estimate_default: checkbox.checked }),
+                });
+                if (!response.ok) throw new Error('Unable to save estimate default. Please try again.');
+            } catch (error) {
+                checkbox.checked = !checkbox.checked;
+                notify(error.message, 'error');
+            } finally {
+                checkbox.disabled = !permissions.edit;
+            }
+        });
+
         initQuickBom();
 
         if (!config.indexUrl || !tableBody || !searchInput || !paginationContainer) return;
@@ -215,7 +239,7 @@
             if (!items?.length) {
                 tableBody.innerHTML = `
                     <tr>
-                        <td colspan="9" class="text-center py-5">
+                        <td colspan="10" class="text-center py-5">
                             <div class="text-muted mb-3"><i class="bi bi-inbox display-1 opacity-25"></i></div>
                             <p class="text-muted">No BOM records found.</p>
                             ${permissions.create ? '<a href="/add-product" class="btn btn-dark-blue btn-sm rounded-pill px-4">Add BOM</a>' : ''}
@@ -236,6 +260,7 @@
 
                 return `
                     <tr>
+                        <td class="ps-4"><input type="checkbox" class="form-check-input estimate-default-checkbox" data-id="${item.id}" aria-label="Use ${name} by default in new estimates" ${item.estimate_default ? 'checked' : ''} ${permissions.edit ? '' : 'disabled'}></td>
                         <td class="ps-4"><span class="text-muted small fw-medium">${srNo}</span></td>
                         <td><div class="fw-bold small">${name}</div></td>
                         <td class="d-none d-md-table-cell">${hsnSac}</td>
@@ -257,7 +282,7 @@
                         </td>
                     </tr>
                     <tr class="details-row d-md-none border" id="bom-details-${item.id}" style="display:none;">
-                        <td colspan="9" class="p-0">
+                        <td colspan="10" class="p-0">
                             <div class="details-content">
                                 <div class="row g-3">
                                     <div class="col-12 d-flex justify-content-between align-items-center">

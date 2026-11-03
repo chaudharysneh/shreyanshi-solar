@@ -135,6 +135,7 @@
                                                         <option value="">Select BOM</option>
                                                         @foreach ($bomProducts ?? [] as $bom)
                                                             <option value="{{ $bom->id }}"
+                                                                data-estimate-default="{{ $bom->estimate_default ? '1' : '0' }}"
                                                                 data-name="{{ $bom->product_name }}"
                                                                 data-price="{{ $bom->price ?? 0 }}"
                                                                 data-categories='{{ json_encode($bom->categories->pluck('name')->toArray()) }}'

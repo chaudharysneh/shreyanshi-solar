@@ -159,6 +159,14 @@ class BomProductController extends ApiBaseController
 
     public function update(Request $request, BomProduct $bomProduct)
     {
+        if ($request->has('estimate_default')) {
+            $data = $request->validate(['estimate_default' => ['required', 'boolean']]);
+            $bomProduct->estimate_default = $data['estimate_default'];
+            $bomProduct->save();
+
+            return response()->json(['success' => true, 'message' => 'Estimate default updated.']);
+        }
+
         // Normalize category_id[] to category_id for validation
         $input = $request->all();
         if ($request->has('category_id') && is_array($request->input('category_id'))) {
