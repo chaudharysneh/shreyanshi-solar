@@ -135,7 +135,9 @@ class HtmlWordDocument
         }
         $xml='';
         if ($node->nodeName==='table' && str_contains($node->getAttribute('class'),'signatures')) {
-            $gap=$this->completion?840:($this->ending?240:680);
+            $styleGap=0;
+            if (preg_match('/margin-top:\s*([0-9.]+)pt/',$node->getAttribute('style'),$sm)) $styleGap=(int) round((float) $sm[1]*20);
+            $gap=$styleGap ?: ($this->completion?1800:($this->ending?240:1300));
             $xml.='<w:p><w:pPr>'.($this->keepGroup?'<w:keepNext/>':'').'<w:spacing w:after="0" w:line="'.$gap.'" w:lineRule="exact"/></w:pPr></w:p>';
         }
         return $xml.($node->nodeName==='table'?$this->table($node):$this->paragraph($node));
