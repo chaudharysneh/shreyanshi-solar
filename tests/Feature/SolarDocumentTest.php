@@ -102,7 +102,8 @@ class SolarDocumentTest extends TestCase
         $fields = $this->fields();
         $fields['total_capacity'] = '4.95';
         $sections = (new SolarDocument)->sections($fields);
-        $this->assertStringContainsString('Total Capacity (KWP)', $sections[0]);
+        $this->assertStringContainsString('Total Capacity (WP)', $sections[0]);
+        $this->assertStringNotContainsString('Total Capacity (KWP)', $sections[0]);
         $this->assertStringContainsString('4950 Wp', $sections[0]);
         $this->assertStringContainsString('0.1 kW', $sections[0]);
         $this->assertStringNotContainsString('0.3 kW', $sections[0]);
