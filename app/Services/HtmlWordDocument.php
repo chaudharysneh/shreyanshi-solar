@@ -46,14 +46,25 @@ class HtmlWordDocument
         $size=$cell ? ($this->completion?20:($this->agreement?19:21)) : ($this->completion?21:($this->agreement?21:23));
         if ($node->nodeName==='h2') $size=$this->agreement?23:25;
         if ($node->nodeName==='h3') $size=$this->agreement?21:23;
-        $alignment=$center?'center':($cell?'left':'both');
+        $left=$cell || ($node instanceof \DOMElement && (
+            str_contains($node->getAttribute('class'),'left') ||
+            str_contains($node->getAttribute('class'),'spaced') ||
+            str_contains($node->getAttribute('style'),'text-align: left') ||
+            str_contains($node->getAttribute('style'),'text-align:left')
+        ));
+        $alignment=$center?'center':($left?'left':'both');
         if ($this->signature && !$this->ending && $this->cellIndex>0) $alignment='right';
         $line=(int) round($size*10*($cell?($this->completion?1.12:1.3):($this->completion?1.2:1.35)));
         $before=$node->nodeName==='h3'?320:0;
         if ($node instanceof \DOMElement && str_contains($node->getAttribute('class'),'spaced')) $before=600;
         if ($node instanceof \DOMElement && str_contains($node->getAttribute('class'),'aadhaar')) $before=560;
         $lineRule=$node instanceof \DOMElement && $node->getElementsByTagName('img')->length ? 'atLeast' : 'exact';
-        $after=$cell?0:($heading?($this->completion?200:360):($this->completion?160:240));
+        $noMargin=$node instanceof \DOMElement && (
+            str_contains($node->getAttribute('class'),'no-margin') ||
+            str_contains($node->getAttribute('style'),'margin-bottom:0') ||
+            str_contains($node->getAttribute('style'),'margin-bottom: 0')
+        );
+        $after=$cell?0:($noMargin?0:($heading?($this->completion?200:360):($this->completion?160:240)));
         $pageBreak=$this->pageBefore?'<w:pageBreakBefore/>':'';
         $this->pageBefore=false;
         return '<w:p><w:pPr>'.$pageBreak.'<w:keepLines/><w:jc w:val="'.$alignment.'"/>'.($heading || ($this->keepGroup && !$cell)?'<w:keepNext/>':'').'<w:spacing w:before="'.$before.'" w:after="'.$after.'" w:line="'.$line.'" w:lineRule="'.$lineRule.'"/></w:pPr>'.$this->runs($node,false,$size).'</w:p>';
@@ -112,7 +123,7 @@ class HtmlWordDocument
         }
         $xml='';
         if ($node->nodeName==='table' && str_contains($node->getAttribute('class'),'signatures')) {
-            $gap=$this->completion?320:($this->ending?240:680);
+            $gap=$this->completion?840:($this->ending?240:680);
             $xml.='<w:p><w:pPr>'.($this->keepGroup?'<w:keepNext/>':'').'<w:spacing w:after="0" w:line="'.$gap.'" w:lineRule="exact"/></w:pPr></w:p>';
         }
         return $xml.($node->nodeName==='table'?$this->table($node):$this->paragraph($node));

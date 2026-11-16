@@ -1,4 +1,4 @@
-<table><thead><tr><th colspan="3">Renewable Energy Generating System<br>Annexure-I<br><small>(Commissioning Report for RE System)</small></th></tr><tr><th style="width:8%">SNo.</th><th style="width:47%">Particulars</th><th style="width:45%">As Commissioned</th></tr></thead><tbody>
+<table class="commissioning-table" style="table-layout: auto;"><thead><tr><th colspan="3">Renewable Energy Generating System<br>Annexure-I<br><small>(Commissioning Report for RE System)</small></th></tr><tr><th style="width:8%">SNo.</th><th style="width:47%">Particulars</th><th style="width:45%">As Commissioned</th></tr></thead><tbody>
 @foreach([
 ['1','Name of the Consumer',$value('consumer_name')],['2','Consumer Number',$value('consumer_number')],['3','Mobile Number',$value('mobile_number')],
 ['4','E-mail','yogeshjadhav101925@gmail.com'],['5','Address of installation',$value('address')],['6','RE Arrangement Type','Net Metering Arrangement'],
