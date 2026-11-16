@@ -67,7 +67,19 @@ class HtmlWordDocument
         $after=$cell?0:($noMargin?0:($heading?($this->completion?200:360):($this->completion?160:240)));
         $pageBreak=$this->pageBefore?'<w:pageBreakBefore/>':'';
         $this->pageBefore=false;
-        return '<w:p><w:pPr>'.$pageBreak.'<w:keepLines/><w:jc w:val="'.$alignment.'"/>'.($heading || ($this->keepGroup && !$cell)?'<w:keepNext/>':'').'<w:spacing w:before="'.$before.'" w:after="'.$after.'" w:line="'.$line.'" w:lineRule="'.$lineRule.'"/></w:pPr>'.$this->runs($node,false,$size).'</w:p>';
+        $runs=$this->runs($node,false,$size);
+        if (str_contains($runs,'<w:r><w:br/></w:r>')) {
+            $parts=explode('<w:r><w:br/></w:r>',$runs);
+            $xml='';
+            foreach ($parts as $index=>$part) {
+                $pBreak=$index===0?$pageBreak:'';
+                $pBefore=$index===0?$before:0;
+                $pAfter=$index===count($parts)-1?$after:0;
+                $xml.='<w:p><w:pPr>'.$pBreak.'<w:keepLines/><w:jc w:val="'.$alignment.'"/>'.($heading || ($this->keepGroup && !$cell)?'<w:keepNext/>':'').'<w:spacing w:before="'.$pBefore.'" w:after="'.$pAfter.'" w:line="'.$line.'" w:lineRule="'.$lineRule.'"/></w:pPr>'.$part.'</w:p>';
+            }
+            return $xml;
+        }
+        return '<w:p><w:pPr>'.$pageBreak.'<w:keepLines/><w:jc w:val="'.$alignment.'"/>'.($heading || ($this->keepGroup && !$cell)?'<w:keepNext/>':'').'<w:spacing w:before="'.$before.'" w:after="'.$after.'" w:line="'.$line.'" w:lineRule="'.$lineRule.'"/></w:pPr>'.$runs.'</w:p>';
 
     }
     private function table(\DOMElement $table): string {
