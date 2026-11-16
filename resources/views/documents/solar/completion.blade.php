@@ -1,8 +1,12 @@
 @php
     $capacityKwp = $value('total_capacity');
-    $capacityWp = is_numeric($capacityKwp)
-        ? rtrim(rtrim(number_format((float) $capacityKwp * 1000, 3, '.', ''), '0'), '.')
-        : $capacityKwp;
+    if (is_numeric($capacityKwp)) {
+        $num = (float) $capacityKwp;
+        $val = $num < 100 ? $num * 1000 : $num;
+        $capacityWp = rtrim(rtrim(number_format($val, 3, '.', ''), '0'), '.');
+    } else {
+        $capacityWp = $capacityKwp;
+    }
 @endphp
 <h2>Work Completion Report for Solar Power Plant</h2>
 <table><thead><tr><th style="width:8%">Sr. No</th><th style="width:57%">Component</th><th style="width:35%">Observation</th></tr></thead><tbody>
