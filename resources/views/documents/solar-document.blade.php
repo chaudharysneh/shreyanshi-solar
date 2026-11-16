@@ -9,13 +9,15 @@ td,th { border: .5pt solid #777; padding: 3pt 4pt; vertical-align: top; overflow
 tr { page-break-inside:avoid; } thead { display:table-header-group; }
 .signatures { margin-top: 34pt; } .signatures td { border:0; width:50%; } .signatures td:last-child { text-align:right; }
 .aadhaar { text-align:center; margin-top:28pt; page-break-inside:avoid; } .aadhaar img { max-width:100%; max-height:310pt; }
-.spaced { margin-top:30pt; } .serials { white-space:pre-wrap; overflow-wrap:break-word; }
+.spaced { margin-top:30pt; text-align: left; } .left { text-align: left; } .serials { white-space:pre-wrap; overflow-wrap:break-word; }
+.commissioning-table { table-layout: auto; }
+.no-margin { margin-bottom: 0 !important; }
 .completion-report { font-size: 10.375pt; line-height: 1.2; }
 .completion-report h2 { margin-bottom: 10pt; }
 .completion-report table { font-size: 9.875pt; line-height: 1.12; margin-bottom: 8pt; }
 .completion-report td, .completion-report th { padding: 1.8pt 4pt; }
 .completion-report p { margin-bottom: 8pt; }
-.completion-report .signatures { margin-top: 16pt; }
+.completion-report .signatures { margin-top: 42pt; }
 .agreement-ending .signatures { margin-top: 12pt; }
 .agreement-ending .signatures td { text-align: left; padding: 8pt 5pt; }
 .net-metering-agreement { font-size:10.7pt; }
