@@ -17,7 +17,7 @@ tr { page-break-inside:avoid; } thead { display:table-header-group; }
 .completion-report table { font-size: 9.875pt; line-height: 1.12; margin-bottom: 8pt; }
 .completion-report td, .completion-report th { padding: 1.8pt 4pt; }
 .completion-report p { margin-bottom: 8pt; }
-.completion-report .signatures { margin-top: 42pt; }
+.completion-report .signatures { margin-top: 90pt; }
 .agreement-ending .signatures { margin-top: 12pt; }
 .agreement-ending .signatures td { text-align: left; padding: 8pt 5pt; }
 .net-metering-agreement { font-size:10.7pt; }
