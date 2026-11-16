@@ -21,7 +21,7 @@
 @foreach([
 ['7','Type of modules (Mono/Poly)','Mono Crystalline Bifacial'],['','Make of Manufacturing',$value('make_of_solar')],
 ['','Wattage per module',$value('wattage_per_module').' Wp'],['','No. of PV Modules',$value('no_of_pv_module').' Nos'],
-['','Total Capacity (KWP)',$capacityWp.' Wp'],['','Warrantee Details (Product + Performance)',$value('warranty')],
+['','Total Capacity (WP)',$capacityWp.' Wp'],['','Warrantee Details (Product + Performance)',$value('warranty')],
 ] as [$number,$label,$text])<tr><td>{{ $number }}</td><td>{{ $label }}</td><td>{{ $text }}</td></tr>@endforeach
 <tr><th colspan="3">PCU</th></tr>
 @foreach([
