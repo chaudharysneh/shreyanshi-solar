@@ -4,7 +4,7 @@
 ['4','E-mail','yogeshjadhav101925@gmail.com'],['5','Address of installation',$value('address')],['6','RE Arrangement Type','Net Metering Arrangement'],
 ['7','RE Source','Solar'],['8','Sanctioned Capacity (kW)',$value('sanctioned_capacity').' kW'],['9','Capacity Type','5-30A/1Ph'],
 ['10','Project Model','On-Grid'],['11','RE Installed Capacity (Rooftop) (kW)',$value('capacity_solar').' kW'],
-['12','RE Installed Capacity (Rooftop + Ground) (kW)',$value('total_capacity').' kW'],['13','RE Installed Capacity (Ground) (kW)','NA'],
+['12','RE Installed Capacity (Rooftop + Ground) (kW)',$value('capacity_solar').' kW'],['13','RE Installed Capacity (Ground) (kW)','NA'],
 ['14','Installation date',$date],['15','Inverter Capacity (kW)',$value('capacity_inverter').' kW'],['','Inverter Make',$value('make_of_inverter')],
 ['','No. of PV Modules',$value('no_of_pv_module').' Nos'],['','Module Capacity (Wp)',$value('wattage_per_module').' Wp'],
 ] as [$number,$label,$text])<tr><td>{{ $number }}</td><td>{{ $label }}</td><td>{{ $text }}</td></tr>@endforeach

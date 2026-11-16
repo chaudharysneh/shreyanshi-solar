@@ -28,6 +28,7 @@ class SolarDocumentTest extends TestCase
         $html=implode('',$sections);
         foreach ($this->fields() as $key=>$value) {
             if ($key==='installation_date') $value='30/10/2026';
+            if ($key==='total_capacity') $value='6540';
             $this->assertStringContainsString($value,$html,$key);
         }
         foreach (['SHREYANSHI ENTERPRISES','YOGESH JADHAV','Net Metering Arrangement','Private Sector','3 Nos, &lt;5 Ohm','Grid Interactive Renewable Regulations'] as $static) $this->assertStringContainsString($static,$html);
@@ -106,6 +107,10 @@ class SolarDocumentTest extends TestCase
         $this->assertStringContainsString('0.1 kW', $sections[0]);
         $this->assertStringNotContainsString('0.3 kW', $sections[0]);
         $this->assertStringNotContainsString('4.95 kWp', $sections[0]);
-        $this->assertStringContainsString('4.95 kW', implode('', array_slice($sections, 1)));
+
+        $fields['total_capacity'] = '3180';
+        $sections = (new SolarDocument)->sections($fields);
+        $this->assertStringContainsString('3180 Wp', $sections[0]);
+        $this->assertStringNotContainsString('3180000 Wp', $sections[0]);
     }
 }
