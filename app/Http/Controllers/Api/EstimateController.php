@@ -43,17 +43,13 @@ class EstimateController extends Controller
                 });
             }
 
-            // Filter by user visibility
+            // Staff can see their own estimates and estimates for customers assigned to them.
             if (!$user->isAdmin()) {
-                if ($request->filled('customer_id')) {
-                    $userId = (int) $user->id;
-                    $query->where(function ($q) use ($userId) {
-                        $q->where('user_id', $userId)
-                            ->orWhere('created_by', $userId);
-                    });
-                } else {
-                    $query->where('user_id', $user->id);
-                }
+                $userId = (int) $user->id;
+                $query->where(function ($q) use ($userId) {
+                    $q->where('user_id', $userId)->orWhere('created_by', $userId)
+                        ->orWhere(fn ($assigned) => $assigned->assignedToCustomerStaff($userId));
+                });
             }
 
             // Filter by customer_id
@@ -67,8 +63,8 @@ class EstimateController extends Controller
                 $query->where('created_by', $user->id);
             } elseif (!$user->isAdmin() && $filter === 'assigned_to_me') {
                 // Records assigned to me but NOT created by me
-                $query->where('assigned_user_id', $user->id)
-                      ->where('created_by', '!=', $user->id);
+                $query->assignedToCustomerStaff((int) $user->id)
+                      ->where(fn ($q) => $q->whereNull('created_by')->orWhere('created_by', '!=', $user->id));
             }
 
         \App\Support\ListFilters::apply($query, $request, ['type', 'status'], ['estimate_date'], ['estimate_no']);
