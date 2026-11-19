@@ -15,6 +15,14 @@ class Estimate extends Model
     public $incrementing = true;
     protected $appends = ['equipment_progress'];
 
+    public function scopeAssignedToCustomerStaff($query, int $userId)
+    {
+        return $query->where(function ($query) use ($userId) {
+            $query->whereIn('customer_id', Lead::query()->select('converted_customer_id')->where('assigned_user_id', $userId)->whereNotNull('converted_customer_id'))
+                ->orWhereIn('customer_id', Deal::query()->select('customer_id')->where('assigned_user_id', $userId)->whereNotNull('customer_id'));
+        });
+    }
+
     public function getEquipmentProgressAttribute(): string
     {
         $equipment=$this->equipment_serials ?? [];

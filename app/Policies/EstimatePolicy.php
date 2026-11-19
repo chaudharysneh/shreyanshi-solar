@@ -17,7 +17,8 @@ class EstimatePolicy
 
     public function view(User $user, Estimate $estimate): bool
     {
-        return $this->ownsRecord($user, $estimate);
+        return $this->ownsRecord($user, $estimate)
+            || Estimate::whereKey($estimate->getKey())->assignedToCustomerStaff((int) $user->id)->exists();
     }
 
     public function create(User $user): bool
