@@ -49,18 +49,27 @@
                                     placeholder="Customer Full Name">
                             </div>
                             <div class="col-md-6">
+                                <label class="form-label fw-semibold" for="customer-assigned-user">Assigned To</label>
+                                @if(auth()->user()->isAdmin())
+                                <select name="assigned_user_id" id="customer-assigned-user" class="form-select"><option value="">Unassigned</option>@foreach($users as $assignee)<option value="{{ $assignee->id }}" @selected(old('assigned_user_id', auth()->id()) == $assignee->id)>{{ $assignee->name }}</option>@endforeach</select>
+                                @else
+                                <input type="hidden" name="assigned_user_id" value="{{ auth()->id() }}"><input class="form-control" value="{{ auth()->user()->name }}" readonly>
+                                @endif
+                                <div class="invalid-feedback"></div>
+                            </div>
+                            <div class="col-md-4">
                                 <label class="form-label fw-semibold">Email</label>
                                 <input type="email" name="email" class="form-control" value="{{ old('email') }}"
                                     placeholder="email@example.com">
                                 <div class="invalid-feedback"></div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label class="form-label fw-semibold">Phone no. <span class="text-danger">*</span></label>
                                 <input type="text" name="phone" class="form-control" value="{{ old('phone') }}"
                                     placeholder="+1 234 567 890">
                                 <div class="invalid-feedback"></div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label class="form-label fw-semibold">WhatsApp no.</label>
                                 <div class="crm-phone-copy">
                                     <input type="text" name="whatsapp" class="form-control" value="{{ old('whatsapp') }}"
@@ -213,3 +222,7 @@
     @endpush
 @include('masters.customers.partials.source-assets')
 @endsection
+
+@push('scripts')
+<script id="customer-assignee-select-init">$(function () { if ($.fn.select2) $("#customer-assigned-user").select2({ theme: "bootstrap-5", width: "100%" }); });</script>
+@endpush

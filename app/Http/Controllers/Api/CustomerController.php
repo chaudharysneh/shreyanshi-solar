@@ -135,6 +135,7 @@ class CustomerController extends Controller
 
             $data = $request->validate([
                 ...\App\Support\CustomerSourceDetails::rules($request),
+                'assigned_user_id' => ['nullable', 'integer', 'exists:users,id'],
                 'name' => ['required', 'string', 'max:255'],
                 'email' => ['nullable', 'email', 'max:255', Rule::unique('customers', 'email')->whereNull('deleted_at')],
                 'phone' => ['required', 'string', 'max:50', Rule::unique('customers', 'phone')->whereNull('deleted_at')],
@@ -152,6 +153,8 @@ class CustomerController extends Controller
                 'installation_master_id' => ['nullable', 'exists:installation_masters,id'],
                 'image' => ['nullable', 'image', 'max:2048'],
             ]);
+
+            if (array_key_exists('assigned_user_id', $data) && !auth()->user()->isAdmin() && (int) $data['assigned_user_id'] !== (int) auth()->id()) throw ValidationException::withMessages(['assigned_user_id' => 'You can only assign customers to yourself.']);
 
             if ($request->hasFile('image')) {
                 $data['image'] = $request->file('image')->store('customers', 'public');
@@ -246,6 +249,7 @@ class CustomerController extends Controller
         try {
             $data = $request->validate([
                 ...\App\Support\CustomerSourceDetails::rules($request,$customer),
+                'assigned_user_id' => ['nullable', 'integer', 'exists:users,id'],
                 'name' => ['required', 'string', 'max:255'],
                 'email' => ['nullable', 'email', 'max:255', Rule::unique('customers', 'email')->ignore($customer->id)->whereNull('deleted_at')],
                 'phone' => ['required', 'string', 'max:50', Rule::unique('customers', 'phone')->ignore($customer->id)->whereNull('deleted_at')],
@@ -263,6 +267,8 @@ class CustomerController extends Controller
                 'installation_master_id' => ['nullable', 'exists:installation_masters,id'],
                 'image' => ['nullable', 'image', 'max:2048'],
             ]);
+
+            if (array_key_exists('assigned_user_id', $data) && !auth()->user()->isAdmin() && (int) $data['assigned_user_id'] !== (int) auth()->id()) throw ValidationException::withMessages(['assigned_user_id' => 'You can only assign customers to yourself.']);
 
             if ($request->hasFile('image')) {
                 if ($customer->image) {

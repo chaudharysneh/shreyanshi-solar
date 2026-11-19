@@ -21,7 +21,8 @@ class CustomerController extends Controller
     {
         $this->authorize('create', Customer::class);
         $countries = Country::orderBy('name')->get();
-        return view('masters.customers.create', compact('countries'));
+        $users = auth()->user()->isAdmin() ? \App\Models\User::orderBy('name')->get(['id','name']) : collect([auth()->user()]);
+        return view('masters.customers.create', compact('countries', 'users'));
     }
 
 
@@ -30,7 +31,8 @@ class CustomerController extends Controller
         $this->authorize('update', $customer);
         $countries = Country::orderBy('name')->get();
         $cities = City::where('country_id', $customer->country_id)->orderBy('name')->get();
-        return view('masters.customers.edit', compact('customer', 'countries', 'cities'));
+        $users = auth()->user()->isAdmin() ? \App\Models\User::orderBy('name')->get(['id','name']) : collect([auth()->user()]);
+        return view('masters.customers.edit', compact('customer', 'countries', 'cities', 'users'));
     }
 
     public function show(Customer $customer)
