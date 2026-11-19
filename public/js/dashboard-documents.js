@@ -376,7 +376,8 @@ if (documentList) {
                 cell.appendChild(open);
                 const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'btn btn-sm btn-outline-danger document-row-action'; remove.title = 'Delete'; remove.setAttribute('aria-label', 'Delete'); remove.innerHTML = '<i class="bi bi-trash" aria-hidden="true"></i>';
                 remove.addEventListener('click', async () => {
-                    if (!window.confirm(`Delete "${record.filename}" and its saved history?`)) return;
+                    const confirmation = await window.showDeleteConfirm(`Delete "${record.filename}" and its saved history?`);
+                    if (!confirmation.isConfirmed) return;
                     remove.disabled = true; error.textContent = '';
                     try { await documentJson(`${documentBase}/${record.id}`, { method: 'DELETE' }); if (rows.children.length === 1 && page > 1) page--; await loadDocuments(); }
                     catch (failure) { error.textContent = failure.message; remove.disabled = false; }
