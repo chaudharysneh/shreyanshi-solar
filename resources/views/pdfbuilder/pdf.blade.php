@@ -1472,94 +1472,50 @@ if (isset($after_blocks) && is_array($after_blocks)) {
             <img src="<?= $coverImage ?>" alt="Header Image"
                 style="width:100%;height:100%;object-fit:cover;display:block;">
         </div>
+        <?php if (!empty($logoBase64)): ?>
+        <div style="position:absolute;top:20px;left:24px;background:#fff;padding:8px 12px;">
+            <img src="<?= $logoBase64 ?>" alt="Company logo" style="max-width:190px;max-height:75px;width:auto;height:auto;">
+        </div>
+        <?php endif; ?>
 
-        <!-- Bottom Half: Content Section with Red Border -->
-        <table width="100%" cellpadding="0" cellspacing="0"
-            style="background:#fff; border-collapse:collapse; font-family:'Montserrat', sans-serif; margin-top:0; padding-left: 20px; padding-right:15px;">
+        <!-- Cover details -->
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#fff;border-collapse:collapse;font-family:'Montserrat',sans-serif;">
             <tr>
-                <!-- LEFT SECTION -->
-                <td width="40%" valign="top" style="padding:10px 15px; border-right:2px solid #4b9349;">
-
-                    <!-- Logo + Company Info -->
-                    <table width="100%" cellpadding="0" cellspacing="0">
-                        <tr>
-                            <?php if (!empty($logoBase64)): ?>
-                            <td width="40%" valign="top">
-                                <img src="<?= $logoBase64 ?>" style="max-width:200px; height:auto; object-fit:contain;">
-                            </td>
-                            <?php endif; ?>
-                        </tr>
-                    </table>
-
-                    <!-- Company Full Name -->
-                    <div
-                        style="font-size:20px; color:#000; margin:25px 0; font-weight:400; font-family: 'Montserrat', sans-serif;">
-                        <?php
-                        $fullCompanyName = esc($globalCompanyName);
-                        if (stripos($fullCompanyName, 'technologies') === false && stripos($fullCompanyName, 'pvt') === false) {
-                            $fullCompanyName .= ' Technologies Pvt. Ltd.';
-                        }
-                        echo $fullCompanyName;
-                        ?>
+                <td width="38%" valign="top" style="padding:20px 22px 14px 28px;border-right:1px solid #dce8de;">
+                    <div style="font-size:11px;letter-spacing:1.5px;font-weight:700;color:#4b9349;margin-bottom:8px;">YOUR SOLAR PARTNER</div>
+                    <div style="font-size:20px;line-height:1.2;font-weight:700;color:#173d2b;margin-bottom:12px; word-wrap:break-word;">
+                        <?= esc($globalCompanyName) ?>
                     </div>
-
-                    <!-- Proposal No -->
-                    <div style="font-size:20px; color:#000; font-weight:400; font-family: 'Montserrat', sans-serif;">
-                        <span style="font-weight:400;"><?= $pdfTypeLabelMixed ?> no : </span>
-                        #<?= esc($estimate_no) ?? '--' ?>
-                    </div>
-
+                    <?php if (!empty($companySettings['phone'])): ?>
+                    <div style="font-size:14px;line-height:1.35;color:#445b50;margin-bottom:7px;"><strong style="color:#264b38;">Phone</strong><br><?= esc($companySettings['phone']) ?></div>
+                    <?php endif; ?>
+                    <?php if (!empty($companySettings['company_address'])): ?>
+                    <div style="font-size:14px;line-height:1.35;color:#445b50;margin-bottom:10px;"><strong style="color:#264b38;">Address</strong><br><?= nl2br(esc($companySettings['company_address'])) ?></div>
+                    <?php endif; ?>
+                    <div style="border-top:1px solid #dce8de;padding-top:8px;font-size:13px;color:#526b5c;"><?= $pdfTypeLabelMixed ?> no. <strong style="color:#173d2b;">#<?= esc($estimate_no ?? '--') ?></strong></div>
                 </td>
-
-                <!-- RIGHT SECTION -->
-                <td width="60%" valign="top" style="padding:10px 10px; padding-top: 25px;">
-
-                    <!-- Title -->
-                    <div
-                        style="margin-top: -25px; font-size:35px; font-weight:700; margin-bottom:10px; font-family: 'Montserrat', sans-serif; color:#000;">
+                <td width="62%" valign="top" style="padding:20px 28px 14px 25px;">
+                    <div style="font-size:11px;letter-spacing:1.5px;font-weight:700;color:#4b9349;margin-bottom:7px;">CLEAN ENERGY FOR YOUR FUTURE</div>
+                    <div style="font-size:30px;line-height:1.1;font-weight:700;color:#173d2b;margin-bottom:10px;">
                         <?= ($estdata->type ?? '') === 'residential' ? 'SOLAR PROPOSAL' : $pdfTypeLabelCap ?>
                     </div>
                     <?php if (($estdata->type ?? '') === 'residential'): ?>
-                    <div
-                        style="font-size:16px; font-style:italic; margin-bottom:15px; font-family: 'Montserrat', sans-serif; color:#666;">
-                        Clean Energy. Guaranteed Savings. Sustainable Future.
-                    </div>
+                    <div style="font-size:14px;line-height:1.3;color:#63786a;margin-bottom:12px;">Clean Energy. Guaranteed Savings. Sustainable Future.</div>
                     <?php endif; ?>
-
-                    <!-- ONGRID + Date -->
-                    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:10px;">
+                    <table width="100%" cellpadding="0" cellspacing="0" style="background:#f1f7f1;border-collapse:collapse;margin-bottom:12px;">
                         <tr>
-                            <td
-                                style="font-size:22px; font-weight:400; font-family: 'Montserrat', sans-serif; color:#000;">
-                                ONGRID <?= $quantity ?>KW
-                            </td>
-                            <td align="right"
-                                style="font-size:22px; font-weight:400; font-family: 'Montserrat', sans-serif;">
-                                <?= $estimateDate ?>
-                            </td>
+                            <td width="50%" style="padding:9px 12px;border-right:1px solid #dce8de;"><div style="font-size:10px;font-weight:700;color:#698072;letter-spacing:1px;">SYSTEM CAPACITY</div><div style="font-size:18px;font-weight:700;color:#275a3a;margin-top:3px;">ONGRID <?= $quantity ?>KW</div></td>
+                            <td width="50%" style="padding:9px 12px;"><div style="font-size:10px;font-weight:700;color:#698072;letter-spacing:1px;">DATE</div><div style="font-size:16px;font-weight:700;color:#275a3a;margin-top:3px;"><?= $estimateDate ?></div></td>
                         </tr>
                     </table>
-
-                    <!-- Client Name -->
-                    <div
-                        style="font-size:20px; color:#000; margin-bottom:10px; font-weight:400; font-family: 'Montserrat', sans-serif;">
-                        <span style="font-size:20px;">Client name :</span> <?= esc($preparedForName) ?>
-                    </div>
-
+                    <div style="font-size:11px;font-weight:700;color:#698072;letter-spacing:1px;margin-bottom:4px;">PREPARED FOR</div>
+                    <div style="font-size:18px;line-height:1.2;font-weight:700;color:#173d2b;"><?= esc($preparedForName) ?></div>
                     <?php if ($hasClientAddress): ?>
-                    <!-- Client Address -->
-                    <div style="font-size:22px; font-weight:400; font-family: 'Montserrat', sans-serif;">
-                        <?= esc($clientAddress) ?>
-                    </div>
+                    <div style="font-size:14px;line-height:1.3;color:#63786a;margin-top:5px;"><?= esc($clientAddress) ?></div>
                     <?php endif; ?>
-
-                    <!-- Red Line -->
-                    <!-- <div style="border-top:1px solid #ff0000; margin-top:15px;"></div> -->
-
                 </td>
             </tr>
         </table>
-
 
         <!-- Footer -->
         <div style="position:fixed; bottom:0; left:0; right:0; background:#4b9349; height:60px; padding:15px; ">
