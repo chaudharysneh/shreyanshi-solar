@@ -69,12 +69,12 @@
                                 @enderror
                             </div>
 
-                            <!-- Email (Readonly) -->
+                            <!-- Email -->
                             <div class="col-md-6">
                                 <label class="form-label d-flex align-items-center gap-2" for="email">
                                     <i class="bi bi-envelope-fill"></i> Email <span class="text-danger">*</span>
                                 </label>
-                                <input type="email" id="email" name="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email', $user->email) }}" readonly>
+                                <input type="email" id="email" name="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email', $user->email) }}">
                                 @error('email')
                                     <div class="staff-validation">{{ $message }}</div>
                                 @enderror
@@ -84,7 +84,7 @@
                             <div class="col-md-6">
                                 <label class="form-label d-flex flex-wrap align-items-center gap-2" for="password">
                                     <span class="d-flex align-items-center gap-2">
-                                        <i class="bi bi-key-fill"></i> New Password <span class="text-danger">*</span>
+                                        <i class="bi bi-key-fill"></i> New Password
                                     </span>
                                     <small class="text-muted">(leave blank to keep current)</small>
                                 </label>

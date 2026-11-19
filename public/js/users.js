@@ -811,9 +811,9 @@
                         const requiredFields = {
                             'name': 'Name is required',
                             'email': 'Email is required',
-                            'password': 'Password is required (minimum 8 characters)',
                             'phone': 'Phone number is required'
                         };
+                        if (!form.querySelector('[name="_method"][value="PUT"]')) requiredFields.password = 'Password is required (minimum 8 characters)';
                         
                         let hasErrors = false;
                         const errors = {};
@@ -835,6 +835,8 @@
                                 }
                             }
                         });
+                        const password = form.querySelector('[name="password"]')?.value || '';
+                        if (password && password.length < 8) { errors.password = ['Password must be at least 8 characters']; hasErrors = true; }
                         
                         if (hasErrors) {
                             showFormErrors(form, errors);
