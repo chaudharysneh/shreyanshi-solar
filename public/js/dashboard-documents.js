@@ -340,11 +340,26 @@ if (documentList) {
             rows.replaceChildren();
             for (const record of result.data) {
                 const row = document.createElement('tr');
-                for (const value of [record.filename, record.customer?.name || '-', record.customer?.phone || '-', ({ solar: 'Solar Documents', subsidy: 'Subsidy Bond', bank: 'Bank Quotation' }[record.type]), new Date(record.updated_at).toLocaleDateString('en-GB')]) {
-                    const cell = document.createElement('td'); cell.textContent = value; row.appendChild(cell);
+                for (const [index, value] of [record.filename, record.customer?.name || '-', record.customer?.phone || '-', ({ solar: 'Solar Documents', subsidy: 'Subsidy Bond', bank: 'Bank Quotation' }[record.type]), new Date(record.updated_at).toLocaleDateString('en-GB')].entries()) {
+                    const cell = document.createElement('td');
+                    if (index === 3) {
+                        const badge = document.createElement('span');
+                        badge.className = `document-type-badge document-type-badge--${['solar', 'subsidy', 'bank'].includes(record.type) ? record.type : 'other'}`;
+                        badge.textContent = value || 'Document'; cell.appendChild(badge);
+                    } else cell.textContent = value;
+                    row.appendChild(cell);
                 }
                 const cell = document.createElement('td');
-                const open = document.createElement('button'); open.type = 'button'; open.className = 'btn btn-sm btn-outline-dark-blue'; open.textContent = 'Open / Edit';
+                cell.className = 'text-nowrap';
+                for (const [format, icon, label] of [['pdf', 'bi-file-earmark-pdf', 'Download PDF'], ['word', 'bi-file-earmark-word', 'Download Word']]) {
+                    const link = document.createElement('a');
+                    link.className = 'btn btn-sm btn-outline-secondary document-row-action';
+                    link.href = `${documentBase}/${record.id}/download/${format}`;
+                    link.title = label; link.setAttribute('aria-label', label);
+                    const symbol = document.createElement('i'); symbol.className = `bi ${icon}`; symbol.setAttribute('aria-hidden', 'true'); link.appendChild(symbol);
+                    cell.appendChild(link);
+                }
+                const open = document.createElement('button'); open.type = 'button'; open.className = 'btn btn-sm btn-outline-secondary document-row-action'; open.title = 'Edit'; open.setAttribute('aria-label', 'Edit'); open.innerHTML = '<i class="bi bi-pencil" aria-hidden="true"></i>';
                 open.addEventListener('click', async () => {
                     open.disabled = true;
                     try {
@@ -358,7 +373,15 @@ if (documentList) {
                     } catch (failure) { error.textContent = failure.message; }
                     finally { open.disabled = false; }
                 });
-                cell.appendChild(open); row.appendChild(cell); rows.appendChild(row);
+                cell.appendChild(open);
+                const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'btn btn-sm btn-outline-danger document-row-action'; remove.title = 'Delete'; remove.setAttribute('aria-label', 'Delete'); remove.innerHTML = '<i class="bi bi-trash" aria-hidden="true"></i>';
+                remove.addEventListener('click', async () => {
+                    if (!window.confirm(`Delete "${record.filename}" and its saved history?`)) return;
+                    remove.disabled = true; error.textContent = '';
+                    try { await documentJson(`${documentBase}/${record.id}`, { method: 'DELETE' }); if (rows.children.length === 1 && page > 1) page--; await loadDocuments(); }
+                    catch (failure) { error.textContent = failure.message; remove.disabled = false; }
+                });
+                cell.appendChild(remove); row.appendChild(cell); rows.appendChild(row);
             }
             if (!result.data.length) { const row = rows.insertRow(); const cell = row.insertCell(); cell.colSpan = 6; cell.className = 'text-center text-muted py-4'; cell.textContent = 'No saved documents found.'; }
             lastPage = result.last_page;

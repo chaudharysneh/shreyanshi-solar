@@ -3,6 +3,11 @@
 .dashboard-document-customer-row .select2-container { flex: 1; min-width: 0; width: 100% !important; }
 .dashboard-document-customer-row > .btn { flex-shrink: 0; }
 .dashboard-document-trigger { padding: 6px 12px; border-radius: 10px; }
+.document-row-action { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; padding: 0; margin-right: 4px; }
+.document-type-badge { display: inline-block; width: 130px; text-align: center; padding: 4px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.document-type-badge--solar { background: #fff2d6; color: #805400; }
+.document-type-badge--subsidy { background: #e5f3e9; color: #245d38; }
+.document-type-badge--bank { background: #e7effb; color: #244b80; }
 .dashboard-document-modal .modal-content { border: 0; border-radius: 18px; overflow: hidden; }
 .dashboard-document-header { background: #121a33; color: #fff; padding: 22px 24px; }
 .dashboard-document-modal .dashboard-document-header .modal-title,
