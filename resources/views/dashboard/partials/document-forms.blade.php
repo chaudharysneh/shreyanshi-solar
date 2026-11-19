@@ -16,6 +16,11 @@
                 ['Consumer Aadhaar Image', 'file'],
             ],
         ],
+        'bank' => [
+            'title' => 'Bank Quotation', 'icon' => 'bi-bank',
+            'description' => 'Customer and payment details',
+            'fields' => [['Consumer Name', 'text'], ['Mobile Number', 'tel'], ['Address', 'textarea'], ['Quotation Date', 'date'], ['Total Amount', 'number'], ['Amount Received', 'number'], ['Amount Pending', 'number']],
+        ],
         'subsidy' => [
             'title' => 'Subsidy Bond', 'icon' => 'bi-file-earmark-text',
             'description' => 'Agreement and consumer details',
@@ -32,6 +37,7 @@
             'Installation & Document Date' => [19, 23, 24, 25],
             'Consumer Documents' => [27],
         ],
+        'bank' => ['Customer Details' => [0, 1, 2], 'Quotation Details' => [3, 4, 5, 6]],
         'subsidy' => [
             'Agreement Details' => [0],
             'Consumer Details' => [1, 2, 3],
@@ -40,11 +46,11 @@
 @endphp
 <div class="dashboard-documents mb-4" data-document-base="{{ route('dashboard.documents.index') }}" data-customer-base="{{ route('dashboard.documents.customers') }}">
     <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-        <div><h5 class="fw-bold mb-1">Document Forms</h5><p class="text-muted small mb-0">Prepare solar documents and subsidy bond details.</p></div>
+        <div><h5 class="fw-bold mb-1">Document Forms</h5><p class="text-muted small mb-0">Prepare solar documents, subsidy bonds and bank quotations.</p></div>
         <div class="d-flex flex-wrap gap-2">
-            <button type="button" class="btn btn-outline-dark-blue" data-bs-toggle="modal" data-bs-target="#dashboard-document-list"><i class="bi bi-folder2-open me-2"></i>Saved Documents</button>
+            <button type="button" class="btn btn-sm btn-outline-dark-blue" data-bs-toggle="modal" data-bs-target="#dashboard-document-list"><i class="bi bi-folder2-open me-2"></i>Saved Documents</button>
             @foreach($dashboardDocuments as $key => $document)
-                <button type="button" class="btn btn-dark-blue dashboard-document-trigger" data-bs-toggle="modal" data-bs-target="#dashboard-document-{{ $key }}"><i class="bi {{ $document['icon'] }} me-2" aria-hidden="true"></i>{{ $document['title'] }}</button>
+                <button type="button" class="btn btn-sm btn-dark-blue dashboard-document-trigger" data-bs-toggle="modal" data-bs-target="#dashboard-document-{{ $key }}"><i class="bi {{ $document['icon'] }} me-2" aria-hidden="true"></i>{{ $document['title'] }}</button>
             @endforeach
         </div>
     </div>
@@ -52,7 +58,7 @@
 @foreach($dashboardDocuments as $key => $document)
 <div class="modal fade dashboard-document-modal" id="dashboard-document-{{ $key }}" tabindex="-1" aria-labelledby="dashboard-document-title-{{ $key }}" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-        <form data-export-url="{{ $key === 'subsidy' ? route('dashboard.subsidy-bond.export') : route('dashboard.solar.export') }}" data-document-type="{{ $key }}" class="modal-content dashboard-document-form" enctype="multipart/form-data">
+        <form data-export-url="{{ match($key) { 'subsidy' => route('dashboard.subsidy-bond.export'), 'bank' => route('dashboard.bank-quotation.export'), default => route('dashboard.solar.export') } }}" data-document-type="{{ $key }}" class="modal-content dashboard-document-form" enctype="multipart/form-data">
             <div class="modal-header dashboard-document-header">
                 <div><h5 class="modal-title fw-bold" id="dashboard-document-title-{{ $key }}"><i class="bi {{ $document['icon'] }} me-2" aria-hidden="true"></i>{{ $document['title'] }}</h5><p class="small mb-0 mt-1">{{ $document['description'] }}</p></div>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -85,11 +91,11 @@
                                     <div class="small text-danger mt-2" role="status" data-customer-error></div>
                                 </div>
                             @elseif($type === 'textarea')
-                                <textarea @if($key === 'subsidy') required @endif id="{{ $fieldId }}" name="{{ \Illuminate\Support\Str::snake(str_replace(['.', '(', ')'], '', $label)) }}" class="form-control" rows="2" placeholder="{{ str_contains($label, 'Serial') ? 'Enter one serial number per line' : 'Enter '.strtolower($label) }}"></textarea>
+                                <textarea @if($key === 'subsidy') required @endif id="{{ $fieldId }}" name="{{ \Illuminate\Support\Str::snake(str_replace(['.', '(', ')'], '', $label)) }}" class="form-control" rows="{{ $key === 'bank' && $label === 'Address' ? 1 : 2 }}" placeholder="{{ str_contains($label, 'Serial') ? 'Enter one serial number per line' : 'Enter '.strtolower($label) }}"></textarea>
                             @elseif($type === 'month')
                                 <select id="{{ $fieldId }}" name="date_month_short" class="form-select"><option value="">Select month</option>@foreach(['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'] as $month)<option value="{{ $month }}">{{ $month }}</option>@endforeach</select>
                             @else
-                                <input @if($key === 'subsidy') required @endif @if($key === 'solar' && $label === 'Total Capacity') readonly @endif id="{{ $fieldId }}" name="{{ \Illuminate\Support\Str::snake(str_replace(['.', '(', ')'], '', $label)) }}" class="form-control" type="{{ in_array($type, ['integer','year','day']) ? 'number' : ($type === 'aadhaar' ? 'text' : $type) }}"
+                                <input @if($key === 'subsidy' || ($key === 'bank' && in_array($label, ['Address', 'Mobile Number', 'Quotation Date', 'Total Amount', 'Amount Received']))) required @endif @if($key === 'solar' && $label === 'Total Capacity' || $key === 'bank' && $label === 'Amount Pending') readonly @endif id="{{ $fieldId }}" name="{{ \Illuminate\Support\Str::snake(str_replace(['.', '(', ')'], '', $label)) }}" class="form-control" type="{{ in_array($type, ['integer','year','day']) ? 'number' : ($type === 'aadhaar' ? 'text' : $type) }}"
                                     @if($type === 'file') accept="image/jpeg,image/png,image/webp" aria-describedby="{{ $fieldId }}-help"
                                     @elseif($type === 'aadhaar') inputmode="numeric" pattern="[0-9]{12}" maxlength="12" placeholder="12-digit Aadhaar number"
                                     @elseif($type === 'tel') inputmode="tel" maxlength="20" placeholder="Enter mobile number"

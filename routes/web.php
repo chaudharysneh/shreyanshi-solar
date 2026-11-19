@@ -129,6 +129,7 @@ Route::middleware(['auth', 'no.cache'])->group(function () {
         Route::get('/{id}', 'show')->whereNumber('id');
     });
     Route::post('/dashboard/documents/solar/export', [\App\Http\Controllers\SolarDocumentController::class, 'export'])->middleware('throttle:20,1')->name('dashboard.solar.export');
+    Route::post('/dashboard/documents/bank-quotation/export', [\App\Http\Controllers\BankQuotationController::class, 'export'])->middleware('throttle:20,1')->name('dashboard.bank-quotation.export');
     Route::post('/dashboard/documents/subsidy-bond/export', [\App\Http\Controllers\SubsidyBondController::class, 'export'])->middleware('throttle:20,1')->name('dashboard.subsidy-bond.export');
     Route::post('/dashboard/filters', [DashboardController::class, 'saveFilters'])->name('dashboard.filters');
 

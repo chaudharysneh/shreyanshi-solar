@@ -31,6 +31,7 @@ class CustomerFormDocumentController extends Controller
         $data=$snapshot->fields;
         $data['filename']=mb_substr($snapshot->filename,0,165).' - v'.$snapshot->version;
         $data['format']=$request->query('format');
+        if ($record->type === 'bank') return app(BankQuotationController::class)->export(new Request($data));
         return app(SubsidyBondController::class)->export(new Request($data),app(SubsidyBondDocument::class));
     }
 }

@@ -1,4 +1,4 @@
-@foreach(['solar'=>'Solar Documents','subsidy'=>'Subsidy Bond'] as $type=>$label)
+@foreach(['solar'=>'Solar Documents','subsidy'=>'Subsidy Bond','bank'=>'Bank Quotation'] as $type=>$label)
 <div class="tab-pane fade p-3 p-md-4" id="customer-{{ $type }}-documents" role="tabpanel" aria-labelledby="customer-{{ $type }}-documents-tab">
     <h6 class="fw-bold mb-1">{{ $label }}</h6><p class="small text-muted mb-3">Saved documents and their previous versions for this customer.</p>
     <div class="table-responsive"><table class="table align-middle"><thead><tr><th>File Name</th><th>Saved</th><th>Last Updated</th><th>Versions</th><th>Actions</th></tr></thead><tbody>

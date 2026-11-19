@@ -215,7 +215,7 @@
                         @foreach(['pipeline' => 'Pipeline', 'documents' => 'Documents', 'workflow' => 'Workflow', 'additional' => 'Additional Details'] as $tab => $label)
                             <li class="nav-item" role="presentation"><button class="nav-link fw-semibold text-nowrap" id="customer-{{ $tab }}-tab" data-bs-toggle="tab" data-bs-target="#customer-{{ $tab }}" type="button" role="tab"><i class="bi {{ ['pipeline' => 'bi-diagram-3', 'documents' => 'bi-folder2-open', 'workflow' => 'bi-signpost-split', 'additional' => 'bi-info-circle'][$tab] }}" aria-hidden="true"></i>{{ $label }}@if($tab === 'documents') <span class="badge bg-secondary ms-1">{{ $overview['documents']->count() }}</span>@endif</button></li>
                         @endforeach
-                        @foreach(['solar'=>'Solar Documents','subsidy'=>'Subsidy Bond'] as $type=>$label)
+                        @foreach(['solar'=>'Solar Documents','subsidy'=>'Subsidy Bond','bank'=>'Bank Quotation'] as $type=>$label)
                             <li class="nav-item" role="presentation"><button class="nav-link fw-semibold text-nowrap" id="customer-{{ $type }}-documents-tab" data-bs-toggle="tab" data-bs-target="#customer-{{ $type }}-documents" type="button" role="tab" aria-controls="customer-{{ $type }}-documents"><i class="bi bi-file-earmark-text" aria-hidden="true"></i>{{ $label }} <span class="badge bg-secondary ms-1">{{ $formDocuments->where('type',$type)->count() }}</span></button></li>
                         @endforeach
                         @foreach($overview['sections'] as $key => $section)

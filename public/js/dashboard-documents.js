@@ -103,6 +103,17 @@ document.querySelectorAll('.dashboard-document-form').forEach(form => {
     moduleCount?.addEventListener('input', calculateCapacity);
     form.addEventListener('input', updateProgress);
     form.addEventListener('change', updateProgress);
+    const bankTotal = form.querySelector('#document-bank-total-amount');
+    const bankReceived = form.querySelector('#document-bank-amount-received');
+    const bankPending = form.querySelector('#document-bank-amount-pending');
+    function calculatePending() {
+        if (!bankTotal || !bankReceived || !bankPending) return;
+        const total = bankTotal.valueAsNumber, received = bankReceived.valueAsNumber;
+        bankReceived.setCustomValidity(Number.isFinite(total) && Number.isFinite(received) && received > total ? 'Amount received cannot exceed the total amount.' : '');
+        bankPending.value = Number.isFinite(total) && Number.isFinite(received) && received <= total ? (total - received).toFixed(2) : '';
+    }
+    bankTotal?.addEventListener('input', calculatePending);
+    bankReceived?.addEventListener('input', calculatePending);
     function selectCustomer(customer, fill = true) {
         const option = new Option(`${customer.name}${customer.phone ? ' (' + customer.phone + ')' : ''}`, customer.id, true, true);
         option.dataset.name = customer.name;
@@ -203,6 +214,7 @@ document.querySelectorAll('.dashboard-document-form').forEach(form => {
             if (input && input.type !== 'file') input.value = value || '';
         }
         if (moduleWattage?.value && moduleCount?.value) calculateCapacity();
+        if (bankTotal?.value && bankReceived?.value) calculatePending();
         selectCustomer(record.customer, false);
         form.elements.namedItem('consumer_name').value = record.fields.consumer_name;
         form.querySelector('[data-export-status]').textContent = '';
@@ -219,7 +231,7 @@ document.querySelectorAll('.dashboard-document-form').forEach(form => {
         form.querySelector('[data-document-step="details"]').classList.toggle('is-active', !exporting);
         form.querySelector('[data-document-step="export"]').classList.toggle('is-active', exporting);
         const summary = form.querySelector('[data-document-summary]');
-        summary.textContent = `${form.elements.namedItem('consumer_name').value || 'Document'} | ${form.dataset.documentType === 'solar' ? 'Solar Documents' : 'Subsidy Bond'}`;
+        summary.textContent = `${form.elements.namedItem('consumer_name').value || 'Document'} | ${({ solar: 'Solar Documents', subsidy: 'Subsidy Bond', bank: 'Bank Quotation' }[form.dataset.documentType])}`;
         updateProgress();
         form.querySelector('.modal-body').scrollTop = 0;
         if (exporting) exportStep.querySelector('h5').focus();
@@ -232,7 +244,7 @@ document.querySelectorAll('.dashboard-document-form').forEach(form => {
             if (!filenameInitialized) {
                 const consumer = form.elements.namedItem('consumer_name').value.trim();
                 const today = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Kolkata', day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date()).replaceAll('/', '-');
-                const documentTitle = form.dataset.documentType === 'solar' ? 'Solar Documents' : 'Subsidy Bond';
+                const documentTitle = ({ solar: 'Solar Documents', subsidy: 'Subsidy Bond', bank: 'Bank Quotation' }[form.dataset.documentType]);
                 filename.value = `${consumer ? consumer + ' - ' : ''}${documentTitle}_${today}`;
                 filenameInitialized = true;
             }
@@ -328,7 +340,7 @@ if (documentList) {
             rows.replaceChildren();
             for (const record of result.data) {
                 const row = document.createElement('tr');
-                for (const value of [record.filename, record.customer?.name || '-', record.customer?.phone || '-', record.type === 'solar' ? 'Solar Documents' : 'Subsidy Bond', new Date(record.updated_at).toLocaleDateString('en-GB')]) {
+                for (const value of [record.filename, record.customer?.name || '-', record.customer?.phone || '-', ({ solar: 'Solar Documents', subsidy: 'Subsidy Bond', bank: 'Bank Quotation' }[record.type]), new Date(record.updated_at).toLocaleDateString('en-GB')]) {
                     const cell = document.createElement('td'); cell.textContent = value; row.appendChild(cell);
                 }
                 const cell = document.createElement('td');
@@ -355,10 +367,10 @@ if (documentList) {
             documentList.querySelector('[data-document-next]').disabled = page >= lastPage;
         } catch (failure) { if (sequence === requestSequence) error.textContent = failure.message; }
     }
+    window.jQuery(documentList.querySelector('[data-document-filter]')).select2({ theme: 'bootstrap-5', width: '100%', dropdownParent: window.jQuery(documentList) }).on('change', () => { page = 1; loadDocuments(); });
     documentList.addEventListener('show.bs.modal', () => { page = 1; loadDocuments(); });
     documentList.querySelector('[data-document-prev]').addEventListener('click', () => { if (page > 1) { page--; loadDocuments(); } });
     documentList.querySelector('[data-document-next]').addEventListener('click', () => { if (page < lastPage) { page++; loadDocuments(); } });
     let searchTimer;
     documentList.querySelector('[data-document-search]').addEventListener('input', () => { clearTimeout(searchTimer); searchTimer = setTimeout(() => { page = 1; loadDocuments(); }, 300); });
-    documentList.querySelector('[data-document-filter]').addEventListener('change', () => { page = 1; loadDocuments(); });
 }

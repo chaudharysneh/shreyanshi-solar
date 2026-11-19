@@ -2,7 +2,7 @@
 .dashboard-documents { padding: 20px 24px; border: 1px solid var(--crm-border, #e2e8f0); border-radius: 16px; background: var(--crm-bg-soft, #f8fafc); }
 .dashboard-document-customer-row .select2-container { flex: 1; min-width: 0; width: 100% !important; }
 .dashboard-document-customer-row > .btn { flex-shrink: 0; }
-.dashboard-document-trigger { padding: 11px 18px; border-radius: 10px; }
+.dashboard-document-trigger { padding: 6px 12px; border-radius: 10px; }
 .dashboard-document-modal .modal-content { border: 0; border-radius: 18px; overflow: hidden; }
 .dashboard-document-header { background: #121a33; color: #fff; padding: 22px 24px; }
 .dashboard-document-modal .dashboard-document-header .modal-title,
@@ -18,6 +18,7 @@
 .dashboard-document-field--full { flex-basis: 100%; }
 .dashboard-document-modal .form-label { margin-bottom: 5px; }
 .dashboard-document-modal .dashboard-document-field textarea { min-height: 76px; }
+.dashboard-document-modal .dashboard-document-field textarea#document-bank-address { min-height: calc(1.5em + .75rem + 2px); height: calc(1.5em + .75rem + 2px); }
 @media (max-width: 991px) { .dashboard-document-field { flex-basis: calc(50% - 16px); } .dashboard-document-field--full { flex-basis: 100%; } }
 @media (max-width: 575px) { .dashboard-document-field, .dashboard-document-section--pairs .dashboard-document-field { flex-basis: 100%; } .dashboard-document-modal .modal-body { padding: 16px !important; } }
 .dashboard-document-modal textarea { resize: vertical; }
