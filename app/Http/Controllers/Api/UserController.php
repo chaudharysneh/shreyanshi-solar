@@ -254,7 +254,7 @@ class UserController extends ApiBaseController
 
         $data = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => ['required', 'string', 'email', Rule::in([$user->email])],
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
             'password' => 'nullable|string|min:8',
             'phone' => ['required', 'regex:/^[0-9]{10}$/'],
             'whatsapp' => 'nullable|string|max:50',
@@ -263,7 +263,6 @@ class UserController extends ApiBaseController
             'permissions' => 'nullable|array',
             'permissions.*' => ['string', Rule::in($allowedPermissions)],
         ], [
-            'email.in' => 'Email cannot be changed.',
             'phone.regex' => 'Phone number must be exactly 10 digits.',
             'image.mimes' => 'Please select a valid image! Allowed: AVIF, WEBP, JPG, JPEG, PNG, GIF, BMP, SVG.',
             'image.max' => 'Image size must not exceed 2MB.',
@@ -277,6 +276,7 @@ class UserController extends ApiBaseController
         }
 
         $user->name = $data['name'];
+        $user->email = $data['email'];
         $user->phone = $data['phone'];
         $user->whatsapp = $data['whatsapp'] ?? null;
         $user->address = $data['address'];
