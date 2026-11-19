@@ -89,7 +89,7 @@
                             @elseif($type === 'month')
                                 <select id="{{ $fieldId }}" name="date_month_short" class="form-select"><option value="">Select month</option>@foreach(['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'] as $month)<option value="{{ $month }}">{{ $month }}</option>@endforeach</select>
                             @else
-                                <input @if($key === 'subsidy') required @endif id="{{ $fieldId }}" name="{{ \Illuminate\Support\Str::snake(str_replace(['.', '(', ')'], '', $label)) }}" class="form-control" type="{{ in_array($type, ['integer','year','day']) ? 'number' : ($type === 'aadhaar' ? 'text' : $type) }}"
+                                <input @if($key === 'subsidy') required @endif @if($key === 'solar' && $label === 'Total Capacity') readonly @endif id="{{ $fieldId }}" name="{{ \Illuminate\Support\Str::snake(str_replace(['.', '(', ')'], '', $label)) }}" class="form-control" type="{{ in_array($type, ['integer','year','day']) ? 'number' : ($type === 'aadhaar' ? 'text' : $type) }}"
                                     @if($type === 'file') accept="image/jpeg,image/png,image/webp" aria-describedby="{{ $fieldId }}-help"
                                     @elseif($type === 'aadhaar') inputmode="numeric" pattern="[0-9]{12}" maxlength="12" placeholder="12-digit Aadhaar number"
                                     @elseif($type === 'tel') inputmode="tel" maxlength="20" placeholder="Enter mobile number"

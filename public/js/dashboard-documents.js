@@ -89,6 +89,18 @@ document.querySelectorAll('.dashboard-document-form').forEach(form => {
     });
     form.querySelector('[data-aadhaar-preview-clear]')?.addEventListener('click', () => { fileInput.value = ''; showImage(savedPreviewUrl); updateProgress(); });
     previewImage?.addEventListener('error', () => { preview.classList.add('d-none'); form.querySelector('[data-aadhaar-preview-error]').textContent = 'Preview unavailable. You can still select a new image or download the saved attachment.'; });
+    const moduleWattage = form.querySelector('#document-solar-wattage-per-module');
+    const moduleCount = form.querySelector('#document-solar-no-of-pv-module');
+    const totalCapacity = form.querySelector('#document-solar-total-capacity');
+    function calculateCapacity() {
+        if (!moduleWattage || !moduleCount || !totalCapacity) return;
+        const wattage = moduleWattage.valueAsNumber;
+        const count = moduleCount.valueAsNumber;
+        const result = wattage * count;
+        totalCapacity.value = Number.isFinite(result) && wattage >= 0 && count >= 0 ? Number(result.toPrecision(12)) : '';
+    }
+    moduleWattage?.addEventListener('input', calculateCapacity);
+    moduleCount?.addEventListener('input', calculateCapacity);
     form.addEventListener('input', updateProgress);
     form.addEventListener('change', updateProgress);
     function selectCustomer(customer, fill = true) {
@@ -190,6 +202,7 @@ document.querySelectorAll('.dashboard-document-form').forEach(form => {
             const input = form.elements.namedItem(key);
             if (input && input.type !== 'file') input.value = value || '';
         }
+        if (moduleWattage?.value && moduleCount?.value) calculateCapacity();
         selectCustomer(record.customer, false);
         form.elements.namedItem('consumer_name').value = record.fields.consumer_name;
         form.querySelector('[data-export-status]').textContent = '';
