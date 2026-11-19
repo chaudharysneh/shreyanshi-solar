@@ -23,6 +23,7 @@ class Customer extends Model
 
     protected $fillable = [
         'lead_source_id','source','referral_name','channel_partner_id',
+        'assigned_user_id',
         'name',
         'email',
         'phone',
@@ -44,6 +45,11 @@ class Customer extends Model
         'created_by',
         'updated_by',
     ];
+
+    public function assignedUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'assigned_user_id');
+    }
 
     public function country(): BelongsTo
     {

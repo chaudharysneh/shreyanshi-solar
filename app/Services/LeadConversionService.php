@@ -38,6 +38,7 @@ class LeadConversionService
                     ? $lead->only(['lead_source_id','source','referral_name','channel_partner_id']) : [];
                 $customer = Customer::create([
                     ...$sourceDetails,
+                    'assigned_user_id' => $lead->assigned_user_id,
                     'name' => $lead->name, 'email' => $lead->email, 'phone' => $lead->phone,
                     'whatsapp' => $lead->whatsapp, 'address' => $lead->address,
                     'company_name' => $lead->company_name, 'image' => $lead->image,
