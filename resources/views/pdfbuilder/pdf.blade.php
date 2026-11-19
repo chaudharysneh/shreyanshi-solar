@@ -1473,7 +1473,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
                 style="width:100%;height:100%;object-fit:cover;display:block;">
         </div>
         <?php if (!empty($logoBase64)): ?>
-        <div style="position:absolute;top:20px;left:24px;background:#fff;padding:8px 12px;">
+        <div style="position:absolute;top:20px;right:24px;background:#fff;padding:8px 12px;border-radius:12px;">
             <img src="<?= $logoBase64 ?>" alt="Company logo" style="max-width:190px;max-height:75px;width:auto;height:auto;">
         </div>
         <?php endif; ?>

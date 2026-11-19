@@ -333,12 +333,7 @@ class DealController extends ApiBaseController
         }
 
         $data = $validator->validated();
-        if ($request->hasFile('signature_path')) {
-            if ($deal->signature_path && Storage::disk('public')->exists($deal->signature_path)) {
-                Storage::disk('public')->delete($deal->signature_path);
-            }
-            $data['signature_path'] = $request->file('signature_path')->store('deals/signatures', 'public');
-        }
+        unset($data['signature_path']);
         $data = $this->prepareDealData($data, $deal);
         $this->ensureVisibleCustomer((int) $data['customer_id']);
         $this->ensureAssignableUser((int) $data['assigned_user_id']);
@@ -356,8 +351,16 @@ class DealController extends ApiBaseController
             }
         }
 
+        $newSignature = null;
+        $oldSignature = $deal->signature_path;
         try {
+            if ($request->hasFile('signature_path')) {
+                $newSignature = $request->file('signature_path')->store('deals/signatures', 'public');
+                if (!$newSignature) throw new \RuntimeException('Unable to store the signature image.');
+                $data['signature_path'] = $newSignature;
+            }
             $deal->update($data);
+            if ($newSignature && $oldSignature && $oldSignature !== $newSignature) Storage::disk('public')->delete($oldSignature);
             if (
                 (array_key_exists('status_id', $data) && (int) $data['status_id'] !== (int) $originalStatusId)
                 || filled($data['status_comment'] ?? null)
@@ -378,6 +381,8 @@ class DealController extends ApiBaseController
                 'redirect' => route('deals.index', $deal),
             ]);
         } catch (\Exception $e) {
+            if ($newSignature && !$deal->wasChanged('signature_path')) Storage::disk('public')->delete($newSignature);
+            Log::error('Deal update failed', ['deal_id' => $deal->id, 'exception' => $e]);
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to update deal. Please try again.',

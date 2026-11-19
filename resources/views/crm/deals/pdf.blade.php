@@ -21,26 +21,26 @@
     <title>Deal Confirmation</title>
     <style>
         @page { margin: 28px 30px; }
-        body { margin: 0; color: #263942; font-family: DejaVu Sans, Arial, sans-serif; font-size: 13px; line-height: 1.66; }
+        body { margin: 0; color: #263942; font-family: DejaVu Sans, Arial, sans-serif; font-size: 13px; line-height: 1.57; }
         .page-frame { position: fixed; top: 0; right: 0; bottom: 0; left: 0; border: 2px solid #4b9349; }
-        .document { padding: 18px 22px; }
+        .document { padding: 14px 22px; }
         table { width: 100%; border-collapse: collapse; }
-        .brand { border-bottom: 2px solid #d9eadc; margin-bottom: 28px; }
-        .brand td { padding-bottom: 15px; vertical-align: middle; }
+        .brand { border-bottom: 2px solid #d9eadc; margin-bottom: 22px; }
+        .brand td { padding-bottom: 10px; vertical-align: middle; }
         .company { color: #1e6138; font-size: 18px; font-weight: bold; letter-spacing: .5px; }
         .company-info { color: #62756a; font-size: 10px; line-height: 1.55; }
-        .subject { margin: 0 0 20px; padding: 7px 0 8px 12px; border-left: 3px solid #2f7a46; color: #263942; line-height: 1.35; }
+        .subject { margin: 0 0 15px; padding: 5px 0 5px 12px; border-left: 3px solid #2f7a46; color: #263942; line-height: 1.35; }
         .subject-label { display: block; margin-bottom: 2px; color: #5b8868; font-size: 8.5px; font-weight: bold; letter-spacing: 1px; }
         .subject-title { font-size: 13px; font-weight: bold; color: #195e35; }
-        p { margin: 0 0 17px; }
-        .details { margin: 18px 0; page-break-inside: avoid; border: 1px solid #d8e5db; border-radius: 3px; overflow: hidden; }
+        p { margin: 0 0 16px; }
+        .details { margin: 16px 0; page-break-inside: avoid; border: 1px solid #d8e5db; border-radius: 3px; overflow: hidden; }
         .details-title { margin: 0; padding: 6px 10px; background: #f1f7f2; color: #2f6d45; font-size: 11px; font-weight: bold; letter-spacing: .1px; border-bottom: 1px solid #d8e5db; }
-        .details td { padding: 6px 10px; border: 0; border-bottom: 1px solid #e6eee8; font-size: 11px; }
+        .details td { padding: 5px 10px; border: 0; border-bottom: 1px solid #e6eee8; font-size: 11px; }
         .details tr:last-child td { border-bottom: 0; }
         .details tr:nth-child(odd) td { background: #f7fbf8; }
         .details .label { width: 32%; color: #65766b; font-weight: normal; background: #fbfdfb; }
         .details .value { color: #243a2e; font-weight: bold; }
-        .signature { margin-top: 30px; padding: 14px 17px; border-left: 3px solid #91bd9b; background: #fafdfb; }
+        .signature { margin-top: 23px; padding: 12px 17px; border-left: 3px solid #91bd9b; background: #fafdfb; page-break-inside: avoid; }
         .signature-name { color: #1d5e36; font-size: 13px; font-weight: bold; }
         .contact { color: #62756a; font-size: 10.5px; }
     </style>
