@@ -508,6 +508,7 @@ Route::middleware(['auth', 'no.cache'])->group(function () {
 
     // WhatsApp configuration API (used by settings page JS)
     Route::get('/whatsapp-config', [WhatsappConfigController::class, 'show'])->name('whatsapp.config.show');
+    Route::get('/whatsapp-config/status', [WhatsappConfigController::class, 'connectionStatus'])->name('whatsapp.config.status');
     Route::post('/whatsapp-config', [WhatsappConfigController::class, 'store'])->name('whatsapp.config.store');
     Route::post('/whatsapp-templates/refresh', [WhatsappConfigController::class, 'refreshTemplates'])->name('whatsapp.templates.refresh');
     Route::post('/whatsapp-templates/{template}/module', [WhatsappConfigController::class, 'updateTemplateModule'])->name('whatsapp.templates.update_module');

@@ -1,4 +1,22 @@
 var waTemplatesCurrentPage = 1;
+var waStatusSequence = 0;
+
+function refreshWhatsappConnectionStatus() {
+    var badge = document.getElementById('whatsappConnectionStatus');
+    var toggle = document.getElementById('whatsappIntegrationToggle');
+    if (!badge || !toggle) return;
+    var sequence = ++waStatusSequence;
+    function render(connected) {
+        badge.classList.toggle('settings-status-disconnected', !connected);
+        badge.querySelector('[data-status-label]').textContent = connected ? 'Connected' : 'Disconnected';
+    }
+    render(false);
+    if (!toggle.checked) return;
+    fetch(badge.dataset.statusUrl, { headers: { Accept: 'application/json' }, credentials: 'same-origin', cache: 'no-store' })
+        .then(function (response) { if (!response.ok) throw new Error('Status unavailable'); return response.json(); })
+        .then(function (data) { if (sequence === waStatusSequence && toggle.checked) render(data.connected === true); })
+        .catch(function () { if (sequence === waStatusSequence) render(false); });
+}
 
 function notifySettings(message, type) {
     if (window.toastr && typeof window.toastr[type] === 'function') {
@@ -18,6 +36,11 @@ $(document).ready(function () {
     // when WhatsApp tab is shown, load existing config
     $('button[data-bs-target="#whatsapp-configure"]').on('shown.bs.tab', function () {
         loadWhatsappConfig();
+        refreshWhatsappConnectionStatus();
+    });
+    document.addEventListener('whatsapp-integration-updated', refreshWhatsappConnectionStatus);
+    $('#whatsappIntegrationToggle').on('change', function () {
+        if (!this.checked) refreshWhatsappConnectionStatus();
     });
 
     // save button
@@ -120,6 +143,7 @@ function saveWhatsappConfig() {
         },
         success: function () {
             $('#wa_status_msg').text('Saved successfully').addClass('text-success');
+            refreshWhatsappConnectionStatus();
         },
         error: function (xhr) {
             if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.errors) {

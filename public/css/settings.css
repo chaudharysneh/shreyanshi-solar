@@ -167,6 +167,8 @@
     border-radius: 50%;
     background: #20c77a;
 }
+.settings-status-badge.settings-status-disconnected { background: #f3f4f6; color: #5e6875; border-color: #d5dbe1; }
+.settings-status-disconnected .settings-status-dot { background: #84909c; }
 
 .settings-inline-status {
     display: inline-flex;

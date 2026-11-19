@@ -41,6 +41,7 @@
             })
                 .then(parseJson)
                 .then(function (payload) {
+                    if (integration === 'whatsapp_integration') document.dispatchEvent(new Event('whatsapp-integration-updated'));
                     setStatus(statusEl, payload.message || "Saved successfully.", "text-success");
                     notify(payload.message || "Settings saved successfully.", "success");
                     if (fetchUrl) {
@@ -279,6 +280,7 @@
                 .catch(function (error) {
                     toggle.checked = !enabled;
                     updateState();
+                    if (integration === 'whatsapp_integration') document.dispatchEvent(new Event('whatsapp-integration-updated'));
                     if (label) {
                         label.textContent = !enabled ? "Enable" : "Disable";
                     }
