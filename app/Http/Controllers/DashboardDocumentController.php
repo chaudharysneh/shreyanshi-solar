@@ -42,6 +42,25 @@ class DashboardDocumentController extends Controller
         $this->authorize('view',$document->customer);
         return response()->json($document->toArray()+['has_aadhaar'=>(bool) ($document->aadhaar_path && Storage::disk('local')->exists($document->aadhaar_path))]);
     }
+    public function download(Request $request, int $id, string $format) {
+        $document=$this->records($request)->with('customer')->findOrFail($id);
+        $this->authorize('view',$document->customer);
+        if ($document->type === 'solar') return app(\App\Services\SolarDocument::class)->download($document->fields,$document->aadhaar_path,$document->filename,$format);
+        $data=$document->fields + ['filename'=>$document->filename,'format'=>$format];
+        $data['filename']=$document->filename; $data['format']=$format;
+        if ($document->type === 'bank') return app(BankQuotationController::class)->export(new Request($data));
+        return app(SubsidyBondController::class)->export(new Request($data),app(\App\Services\SubsidyBondDocument::class));
+    }
+    public function destroy(Request $request, int $id) {
+        $document=$this->records($request)->with('customer')->findOrFail($id);
+        $this->authorize('view',$document->customer);
+        $paths=$document->versions()->pluck('aadhaar_path')->push($document->aadhaar_path)->filter()->unique()->values()->all();
+        $document->delete();
+        foreach ($paths as $path) {
+            if (!DashboardDocument::where('aadhaar_path',$path)->exists() && !\App\Models\DashboardDocumentVersion::where('aadhaar_path',$path)->exists()) Storage::disk('local')->delete($path);
+        }
+        return response()->json(['success'=>true]);
+    }
     public function save(Request $request) {
         $data=$request->validate([
             'document_id'=>['nullable','integer'], 'customer_id'=>['required','integer'],

@@ -126,6 +126,8 @@ Route::middleware(['auth', 'no.cache'])->group(function () {
         Route::get('/', 'index')->name('dashboard.documents.index');
         Route::post('/', 'save')->middleware('throttle:30,1');
         Route::get('/{id}/aadhaar', 'aadhaar')->whereNumber('id');
+        Route::get('/{id}/download/{format}', 'download')->whereNumber('id')->whereIn('format', ['pdf', 'word']);
+        Route::delete('/{id}', 'destroy')->whereNumber('id');
         Route::get('/{id}', 'show')->whereNumber('id');
     });
     Route::post('/dashboard/documents/solar/export', [\App\Http\Controllers\SolarDocumentController::class, 'export'])->middleware('throttle:20,1')->name('dashboard.solar.export');
