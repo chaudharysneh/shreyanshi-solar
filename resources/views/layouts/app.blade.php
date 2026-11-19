@@ -917,12 +917,6 @@
                                                 </a>
                                             </li>
                                         <li>
-                                            <a class="dropdown-item" href="{{ route('estimates.create', ['type' => 'bank quote']) }}">
-                                                <i class="bi bi-bank"></i>
-                                                <span>Add Bank Quotation</span>
-                                            </a>
-                                        </li>
-                                        <li>
                                                 {{-- <button type="button" class="dropdown-item"
                                                     data-bs-toggle="modal" data-bs-target="#quickEstimateModal">
                                                     <i class="bi bi-lightning-charge"></i>

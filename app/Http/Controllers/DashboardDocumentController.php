@@ -30,7 +30,7 @@ class DashboardDocumentController extends Controller
         return response()->json($customer->only(['id','name','phone','address']),201);
     }
     public function index(Request $request) {
-        $data=$request->validate(['q'=>['nullable','string','max:200'],'type'=>['nullable','in:solar,subsidy']]);
+        $data=$request->validate(['q'=>['nullable','string','max:200'],'type'=>['nullable','in:solar,subsidy,bank']]);
         $documents=$this->records($request)->select(['id','customer_id','type','filename','updated_at'])->with('customer:id,name,phone')
             ->when($data['type'] ?? null,fn ($query,$type)=>$query->where('type',$type))
             ->when($data['q'] ?? null,fn ($query,$q)=>$query->where(fn ($query)=>$query->where('filename','like','%'.$q.'%')->orWhereHas('customer',fn ($query)=>$query->where('name','like','%'.$q.'%')->orWhere('phone','like','%'.$q.'%'))))
@@ -45,12 +45,17 @@ class DashboardDocumentController extends Controller
     public function save(Request $request) {
         $data=$request->validate([
             'document_id'=>['nullable','integer'], 'customer_id'=>['required','integer'],
-            'type'=>['required','in:solar,subsidy'], 'filename'=>['required','string','max:180'],
+            'type'=>['required','in:solar,subsidy,bank'], 'filename'=>['required','string','max:180'],
             'fields'=>['required','array'], 'fields.consumer_name'=>['required','string','max:200'],
             'fields.agreement_date'=>['required_if:type,subsidy','nullable','date_format:Y-m-d'],
             'fields.consumer_number'=>['required_if:type,subsidy','nullable','string','max:100'],
             'fields.address'=>['required_if:type,subsidy','nullable','string','max:2000'],
-            'fields.*'=>['nullable','string','max:4000'],
+            'fields.mobile_number'=>['required_if:type,bank','nullable','string','max:20'],
+            'fields.quotation_date'=>['required_if:type,bank','nullable','date_format:Y-m-d'],
+            'fields.total_amount'=>['required_if:type,bank','nullable','numeric','min:0'],
+            'fields.amount_received'=>['required_if:type,bank','nullable','numeric','min:0','lte:fields.total_amount'],
+            'fields.amount_pending'=>['nullable','numeric','min:0'],
+            'fields.*'=>['nullable','string', function ($attribute, $value, $fail) { if (is_string($value) && mb_strlen($value) > 4000) $fail('The field must not exceed 4000 characters.'); }],
             'consumer_aadhaar_image_data'=>['nullable','string','max:6990600'],
             'consumer_aadhaar_image'=>['nullable','image','mimes:jpg,jpeg,png,webp','max:5120'],
         ]);

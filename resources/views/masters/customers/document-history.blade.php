@@ -4,7 +4,7 @@
 <div class="container-fluid p-0">
     <div class="card border-0 shadow-sm rounded-4">
         <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-3 p-4">
-            <div><h1 class="h5 fw-bold mb-1">{{ $record->type === 'solar' ? 'Solar Documents' : 'Subsidy Bond' }}</h1><p class="text-muted small mb-0">{{ $customer->name }} &middot; {{ $selected->filename }}</p></div>
+            <div><h1 class="h5 fw-bold mb-1">{{ match($record->type) { 'solar' => 'Solar Documents', 'bank' => 'Bank Quotation', default => 'Subsidy Bond' } }}</h1><p class="text-muted small mb-0">{{ $customer->name }} &middot; {{ $selected->filename }}</p></div>
             <a class="btn btn-outline-dark-blue" href="{{ route('masters.customers.show',$customer) }}#customer-{{ $record->type }}-documents">Back to Customer</a>
         </div>
         <div class="card-body p-4">

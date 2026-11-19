@@ -5,6 +5,7 @@ namespace App\Services;
 class HtmlWordDocument
 {
     private array $images=[];
+    private bool $quotation=false;
     private bool $completion=false;
     private bool $ending=false;
     private bool $signature=false;
@@ -43,7 +44,7 @@ class HtmlWordDocument
         $heading=in_array($node->nodeName,['h2','h3']);
         $center=$node->nodeName==='h2' || ($node instanceof \DOMElement && in_array($node->getAttribute('class'),['center','aadhaar']));
         // DOCX sizes use half-points; round PDF sizes to Word's nearest half-point.
-        $size=$cell ? ($this->completion?20:($this->agreement?19:21)) : ($this->completion?21:($this->agreement?21:23));
+        $size=$this->quotation ? ($cell ? 17 : 19) : ($cell ? ($this->completion?20:($this->agreement?19:21)) : ($this->completion?21:($this->agreement?21:23)));
         if ($node->nodeName==='h2') $size=$this->agreement?23:25;
         if ($node->nodeName==='h3') $size=$this->agreement?21:23;
         $left=$cell || ($node instanceof \DOMElement && (
@@ -98,7 +99,7 @@ class HtmlWordDocument
             }
         }
         $this->signature=str_contains($table->getAttribute('class'),'signatures');
-        $border=$this->signature?'nil':'single';
+        $border=($this->signature || ($this->quotation && str_contains($table->getAttribute('class'),'plain')))?'nil':'single';
         $padding=$this->ending && $this->signature?160:($this->completion?36:60);
         $xml='<w:tbl><w:tblPr><w:tblW w:w="9986" w:type="dxa"/><w:tblLayout w:type="fixed"/><w:tblBorders>';
         foreach (['top','left','bottom','right','insideH','insideV'] as $side) $xml.='<w:'.$side.' w:val="'.$border.'" w:sz="4" w:color="777777"/>';
@@ -112,7 +113,7 @@ class HtmlWordDocument
                 $this->cellIndex=$index;
                 $span=max(1,(int) $cell->getAttribute('colspan'));
                 $width=array_sum(array_slice($widths,$index,$span)); $index+=$span;
-                $xml.='<w:tc><w:tcPr><w:tcW w:w="'.$width.'" w:type="dxa"/>'.($span>1?'<w:gridSpan w:val="'.$span.'"/>':'').'</w:tcPr>'.$this->paragraph($cell,18,true).'</w:tc>';
+                $xml.='<w:tc><w:tcPr><w:tcW w:w="'.$width.'" w:type="dxa"/>'.($span>1?'<w:gridSpan w:val="'.$span.'"/>':'').($this->quotation && $cell->nodeName==='th' ? '<w:shd w:fill="EAF3EC"/>' : '').'</w:tcPr>'.$this->paragraph($cell,18,true).'</w:tc>';
             }
             $xml.='</w:tr>';
         }
@@ -143,7 +144,8 @@ class HtmlWordDocument
         return $xml.($node->nodeName==='table'?$this->table($node):$this->paragraph($node));
     }
 
-    public function render(array $sections): string {
+    public function render(array $sections, bool $quotation=false): string {
+        $this->quotation=$quotation;
         $this->images=[]; $this->pageBefore=false; $this->keepGroup=false; $body='';
         foreach ($sections as $index=>$html) {
             $this->completion=$index===0; $this->ending=$index===count($sections)-1;
