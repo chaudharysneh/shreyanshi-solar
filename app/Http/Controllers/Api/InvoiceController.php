@@ -547,13 +547,9 @@ class InvoiceController extends ApiBaseController
     public function destroy(Invoice $invoice)
     {
         $this->authorize('delete', $invoice);
-        if ($invoice->financePlan()->exists() || $invoice->financeEvents()->exists() || \App\Models\Payment::where('invoice_id', $invoice->id)->exists()) {
-            return response()->json(['success' => false, 'message' => 'This invoice has finance records and cannot be deleted. Use payment corrections to retain its audit history.'], 422);
-        }
-        $invoice->update(['deleted_by' => auth()->id()]);
         $invoiceName = $invoice->invoice_no;
-        app(\App\Services\UserLogService::class)->deleted($invoice, 'Deleted an Invoice ' . ($invoice->number ?: ('ID ' . $invoice->id)));
-        $invoice->delete();
+        app(\App\Services\InvoiceDeletionService::class)->delete($invoice, (int) auth()->id());
+        app(\App\Services\UserLogService::class)->deleted($invoice, 'Deleted an Invoice ' . ($invoiceName ?: ('ID ' . $invoice->id)));
 
         send_admin_notification('Invoice', 'Deleted', $invoiceName ?? 'N/A', []);
 

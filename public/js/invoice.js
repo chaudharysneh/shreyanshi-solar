@@ -70,7 +70,7 @@
         }
 
         function deleteInvoice(id, button) {
-            window.showDeleteConfirm("This invoice will be deleted!").then((result) => {
+            window.showDeleteConfirm("This invoice and its linked deals, tasks, payment transactions and bank finance details will be deleted. Other invoices will not be affected.").then((result) => {
                 if (result.isConfirmed) {
                     const originalHtml = button.innerHTML;
                     button.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
