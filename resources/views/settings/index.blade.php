@@ -211,8 +211,8 @@
                         <div class="mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
                             <div>
                                 <h4 class="fw-bold mb-1">Configure your WhatsApp API settings <span
-                                        class="settings-status-badge settings-inline-status"><span
-                                            class="settings-status-dot"></span>Connected</span></h4>
+                                        id="whatsappConnectionStatus" data-status-url="{{ route('whatsapp.config.status') }}" class="settings-status-badge settings-inline-status settings-status-disconnected"><span
+                                            class="settings-status-dot"></span><span data-status-label>Disconnected</span></span></h4>
                                 <div class="text-muted">Enter your WhatsApp App details and WhatsApp Business credentials.
                                 </div>
                             </div>

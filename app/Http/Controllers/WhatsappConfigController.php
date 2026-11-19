@@ -56,6 +56,22 @@ class WhatsappConfigController extends Controller
         return response()->json($config);
     }
 
+    public function connectionStatus()
+    {
+        $config = WhatsappConfig::first();
+        if (!\App\Helpers\IntegrationHelper::isWhatsAppEnabled() || !$config || !filled($config->access_token) || !preg_match('/^[0-9]+$/', (string) $config->phone_number_id)) {
+            return response()->json(['connected' => false])->header('Cache-Control', 'no-store');
+        }
+        try {
+            $response = $this->whatsappApiClient()->timeout(6)->withToken($config->access_token)
+                ->get('https://graph.facebook.com/v19.0/'.$config->phone_number_id, ['fields' => 'id']);
+            $connected = $response->successful() && (string) $response->json('id') === (string) $config->phone_number_id;
+        } catch (\Throwable $error) {
+            $connected = false;
+        }
+        return response()->json(['connected' => $connected])->header('Cache-Control', 'no-store');
+    }
+
     public function store(Request $request)
     {
         $userId = Auth::id();
